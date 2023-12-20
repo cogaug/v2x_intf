@@ -1,0 +1,14 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/woojin/v2x_intf/install/v2x_intf/lib/python3.10/site-packages",
+        "/home/woojin/v2x_intf/install/case_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/woojin/v2x_intf/install/v2x_intf/lib/python3.10/site-packages",
+        "/home/woojin/v2x_intf/install/case_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
