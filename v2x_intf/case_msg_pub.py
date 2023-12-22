@@ -26,7 +26,6 @@ class CaseMsgsPub(Node):
             vehicle_velocity = float(self.cnt_run+0.412),
             object_data = [od]
         )
-        # re.object_data.append(od)
         self.pub_rec.publish(re)
         self.get_logger().info('Publishing: "%s"' % re)
 
