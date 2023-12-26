@@ -1,18 +1,11 @@
 import rclpy as rclpy
 from rclpy.node import Node
-from rclpy.serialization import serialize_message, deserialize_message
 
 from case_msgs.msg import Recognition, Objects
 import socket
 
 obu_ip = '192.168.2.100' # TODO : MATCH IT!
-obu_port = 1000 # TODO : MATCH IT!
-
-# Create a TCP socket
-# client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Connect to the server (establishing the connection)
-# client_socket.connect((obu_ip, obu_port))
+obu_port = 9201 # TODO : MATCH IT!
 
 class RecognitionSubscriber(Node):
     def __init__(self):
@@ -24,13 +17,17 @@ class RecognitionSubscriber(Node):
             10)
         self.subscription  # prevent unused variable warning
 
+    def convertToV2XMsg(self, msg):
+        # TODO : convert to V2X msg
+        pass
+
+    def convertFromV2XMsg(self, msg):
+        # TODO : convert from V2X msg
+        pass
+
     def recognition_callback(self, msg):
+        self.convertToV2XMsg(msg)
         print("I heard:", msg)
-        serialized_data = serialize_message(msg)
-        # Print serialized msg
-        # client_socket.send() #* message.encode())
-        deserialized_msg = deserialize_message(Recognition, serialized_data)
-        print("serialize->deserialize : ", deserialize_message)
 
 
 def main(args=None):
@@ -41,7 +38,6 @@ def main(args=None):
     # client_socket.close()
     recognition_subscriber.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
