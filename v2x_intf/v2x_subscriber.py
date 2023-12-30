@@ -1,6 +1,11 @@
 import rclpy as rclpy
 from rclpy.node import Node
+
 from case_msgs.msg import Recognition, Objects
+import socket
+
+obu_ip = '192.168.2.100' # TODO : MATCH IT!
+obu_port = 9201 # TODO : MATCH IT!
 
 class RecognitionSubscriber(Node):
     def __init__(self):
@@ -12,23 +17,27 @@ class RecognitionSubscriber(Node):
             10)
         self.subscription  # prevent unused variable warning
 
-    def recognition_callback(self, msg):
-#             int32 vehicle_id
-# int32[] datetime
-# float32[] vehicle_pose
-# float32 vehicle_velocity
-# case_msgs/Objects[] object_data
+    def convertToV2XMsg(self, msg):
+        # TODO : convert to V2X msg
+        pass
 
-        self.get_logger().info('I heard: "%s"' % msg.vehicle_id)
+    def convertFromV2XMsg(self, msg):
+        # TODO : convert from V2X msg
+        pass
+
+    def recognition_callback(self, msg):
+        self.convertToV2XMsg(msg)
+        print("I heard:", msg)
+
 
 def main(args=None):
     rclpy.init(args=args)
     recognition_subscriber = RecognitionSubscriber()
     rclpy.spin(recognition_subscriber)
 
+    # client_socket.close()
     recognition_subscriber.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
