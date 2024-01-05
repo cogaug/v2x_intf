@@ -5,6 +5,7 @@ from cogaug_msgs.msg import Recognition, Objects
 import socket
 import threading
 import select
+from struct import *
 
 obu_ip = '192.168.2.100' # TODO : MATCH IT!
 obu_port = 9201 # TODO : MATCH IT!
@@ -72,7 +73,20 @@ class RecognitionSubscriber(Node):
         self.connection_manager = connection_manager
 
     def convertToV2XMsg(self, msg):
+        # Consider to use https://docs.python.org/3/library/struct.html
         # TODO : convert to V2X msg
+        # 'i' int32 vehicle_id
+        # 'iiiiiii' int32[] datetime
+        # 'ff' float32[] vehicle_pose
+        # 'f' float32 vehicle_velocity
+        #  cogaug_msgs/Objects[] object_data
+        #  'ff'     float32[] object_position
+        #  'f'     float32 object_velocity
+        #  'i'     int32 object_class
+        #  'f'     float32 recognition_accuracy
+
+        # "<iiiiiiiiffffffif" 
+
         pass
 
     def convertFromV2XMsg(self, msg):
