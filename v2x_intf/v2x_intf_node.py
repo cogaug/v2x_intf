@@ -1,14 +1,11 @@
 import rclpy as rclpy
 from rclpy.node import Node
 
-from cogaug_msgs.msg import Recognition, Objects
+from v2x_msgs.msg import Recognition, Objects
 import socket
 import threading
 import select
 from struct import *
-
-obu_ip = '192.168.2.100' # TODO : MATCH IT!
-obu_port = 9201 # TODO : MATCH IT!
 
 
 class TcpConnectionManager:
@@ -66,7 +63,7 @@ class RecognitionSubscriber(Node):
         super().__init__('recognition_subscriber')
         self.subscription = self.create_subscription(
             Recognition,
-            'cogaug/recognition',
+            'v2x_msgs/recognition',
             self.recognition_callback,
             10)
         self.subscription  # prevent unused variable warning
