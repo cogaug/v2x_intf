@@ -132,11 +132,11 @@ class RecognitionSubscriber(Node):
         fDDateTimeType = 'HBBBBHh' # (year, month, day, hour, minute, second, offset)
         fPosition3D = 'll' # (latitude, longitude)
         fPositionalAccuracy = 'BBH'
-        fDetectedObjectCommonData = '<BBHhBhhBHBHB'
         fFirstPart = f'<B {fDDateTimeType} {fPosition3D} {fPositionalAccuracy} B' # equipmentType, sDSMTimeStamp, refPos, refPosXYConf, numDetectedObjects
 
         packed_objects = b''
         num_object = 0
+        fDetectedObjectCommonData = '<BBHhBhhBHBHB'
         for idx, obj in enumerate(msg.object_data) :
             # Create datetime objects, including milliseconds
             dt2 = (
@@ -152,7 +152,7 @@ class RecognitionSubscriber(Node):
             if measurementTime > 1500 or measurementTime < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
               continue
             
-            object_id = msg.vehicle_id << 16 + idx
+            object_id = msg.vehicle_id << 16 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
 
             offsetX, offsetY = self._calculate_offsets( msg.vehicle_pos[0],  msg.vehicle_pos[1], obj.object_position[0], obj.object_position[1])
             if offsetX > 32767 or offsetX < -32767 or offsetY > 32767 or offsetY < -32767 :
@@ -195,7 +195,17 @@ class RecognitionSubscriber(Node):
         )
         packed_data += packed_objects
 
-        return packed_data
+        # Convert header to C struct data type
+        # Ref : v2x_intf_hdr_type
+        fmsgHdrType = '<III'
+        hdr_data = struct.pack(
+            fmsgHdrType,
+            0x53415445,         # hdr
+            0x016792,           # msgID for recognition
+            len(packed_data)    # msgLen
+        )
+
+        return hdr_data+packed_data
 
     def recognition_callback(self, msg):
         print('Received recognition message:', msg)
