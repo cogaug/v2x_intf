@@ -1,12 +1,13 @@
 import socket
 import threading
 import select
+from v2x_const import V2XConst as v2xconst
 
 class TcpConnectionManager:
     def __init__(self):
 
-        self.obu_ip = '192.168.2.100' # TODO : MATCH IT!
-        self.obu_port = 9201
+        self.obu_ip =  v2xconst.OBU_IP 
+        self.obu_port = v2xconst.OBU_PORT
 
         self.obu_connected = False
         self.receive_buffer = b''
