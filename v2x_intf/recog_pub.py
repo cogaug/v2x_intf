@@ -2,6 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from v2x_msgs.msg import Recognition, Objects
+from v2x_const import V2XConst as v2xconst
 import struct
 
 class RecognitionPublisher(Node):
@@ -9,13 +10,7 @@ class RecognitionPublisher(Node):
         super().__init__('recognition_publisher')
 
     def _proc_recognition_msg(self, data) : # data contains main message and object data
-        fDDateTimeType = 'HBBBBHh'
-        fPosition3D = 'll'
-        fPositionalAccuracy = 'BBH'
-        
-        fFirstPart = f'<B {fDDateTimeType} {fPosition3D} {fPositionalAccuracy} B' # equipmentType, sDSMTimeStamp, refPos, refPosXYConf, numDetectedObjects
-
-        main_msg_size = struct.calcsize(fFirstPart)
+        main_msg_size = struct.calcsize(v2xconst.fFirstPart)
         main_msg_data = data[: main_msg_size]
         (equipmentType, year, month, day, hour, minute, second, offset,
          latitude, longitude, semiMajor, semiMinor, orientation, numDetectedObjects) = struct.unpack(fFirstPart, main_msg_data)

@@ -37,9 +37,9 @@ class RecognitionSubscriber(Node):
         mean_lat = (lat1_rad + lat2_rad) / 2
             
         # Calculate offsets
-        R = 6378137.0 # Radius of the Earth in meters
-        x_offset = R * dlon * math.cos(mean_lat)
-        y_offset = R * dlat
+        v2xconst.R = 6378137.0 # Radius of the Earth in meters
+        x_offset = v2xconst.R * dlon * math.cos(mean_lat)
+        y_offset = v2xconst.R * dlat
             
         return int(x_offset*10.0), int(y_offset*10.0) # convert to 0.1 meter unit
 
@@ -139,12 +139,11 @@ class RecognitionSubscriber(Node):
 
         # Convert header to C struct data type
         # Ref : v2x_intf_hdr_type
-        fmsgHdrType = '<III'
         hdr_data = struct.pack(
-            fmsgHdrType,
-            0x53415445,         # hdr
-            0x016792,           # msgID for recognition
-            len(packed_data)    # msgLen
+            v2xconst.fmsgHdrType,
+            v2xconst.HDR_FLAG,          # hdr
+            v2xconst.MSG_RECOGNITION,   # msgID for recognition
+            len(packed_data)            # msgLen
         )
 
         return hdr_data+packed_data
