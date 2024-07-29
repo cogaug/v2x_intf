@@ -2,8 +2,8 @@ import rclpy as rclpy
 from rclpy.node import Node
 # from v2x_msgs.msg import Recognition, Objects
 
-from tcpconn_man import TcpConnectionManager
-from recog_sub import RecognitionSubscriber
+from v2x_intf_pkg.tcpconn_man import TcpConnectionManager
+from v2x_intf_pkg.recog_sub import RecognitionSubscriber
 
 def main(args=None):
     rclpy.init(args=args)
