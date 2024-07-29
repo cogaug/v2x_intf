@@ -82,13 +82,13 @@ class RecognitionSubscriber(Node):
         for idx, obj in enumerate(msg.object_data) :
             # Create datetime objects, including milliseconds to calculate measurementTimeOffset
             dt2 = datetime.datetime(
-              obj.detect_time[0],  # year
-              obj.detect_time[1],  # month
-              obj.detect_time[2],  # day
-              obj.detect_time[3],  # hour
-              obj.detect_time[4],  # minute
-              obj.detect_time[5],  # second
-              obj.detect_time[6]   # microsecond
+              obj.detection_time[0],  # year
+              obj.detection_time[1],  # month
+              obj.detection_time[2],  # day
+              obj.detection_time[3],  # hour
+              obj.detection_time[4],  # minute
+              obj.detection_time[5],  # second
+              obj.detection_time[6]   # microsecond
             )
             measurementTimeOffset = (dt2-dt1).total_seconds()*1000 # in milliseconds for MeasurementTimeOffset type
             if measurementTimeOffset > 1500 or measurementTimeOffset < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
