@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from v2x_msgs.msg import Recognition, Objects
-from v2x_intf.pkg.v2x_const import V2XConst as v2xconst
+from v2x_intf_pkg.v2x_const import V2XConst as v2xconst
 import struct
 
 class RecognitionPublisher(Node):

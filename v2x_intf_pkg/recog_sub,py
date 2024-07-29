@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from v2x_intf.pkg.v2x_msgs.msg import Recognition
+from v2x_msgs.msg import Recognition
 import struct
 import datetime
 import math
