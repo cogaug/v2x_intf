@@ -67,8 +67,8 @@ class RecognitionSubscriber(Node):
         )
 
         position3D = (
-            msg.vehicle_pos[0]*1000*1000*10, # Latitude in 1/10th microdegree
-            msg.vehicle_pos[1]*1000*1000*10  # Longitude in 1/10th microdegree
+            msg.vehicle_position[0]*1000*1000*10, # Latitude in 1/10th microdegree
+            msg.vehicle_position[1]*1000*1000*10  # Longitude in 1/10th microdegree
         )
 
         positionAccuracy = (
