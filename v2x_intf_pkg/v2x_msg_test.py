@@ -3,7 +3,7 @@ from rclpy.node import Node
 from v2x_msgs.msg import Recognition, Objects
 import datetime as d
 
-class V2XMsgsPub(Node):
+class V2XMsgsTest(Node):
     def __init__(self):
         super().__init__('v2x_msg_test')
         self.timer_period = 1.0
@@ -45,10 +45,10 @@ class V2XMsgsPub(Node):
     
 def main(args=None):
     rp.init(args=args)
-    v2x_msgs_pub = V2XMsgsPub()
-    rp.spin(v2x_msgs_pub)
+    v2x_msgs_test = V2XMsgsTest()
+    rp.spin(v2x_msgs_test)
 
-    v2x_msgs_pub.destroy_node()
+    v2x_msgs_test.destroy_node()
     rp.shutdown()
 
 
