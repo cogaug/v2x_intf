@@ -25,8 +25,6 @@ class Parser :
 
     
     self.logger.info(f'msg_type is {type(msg_type)}')
-    else:
-      self.logger.info('msg_type is not int')
     self.logger.info(f'Header data: {hdr_data}')
     self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_type: {msg_type:#X}, msg_len: {msg_len}')
 
