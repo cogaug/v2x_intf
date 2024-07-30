@@ -42,7 +42,7 @@ class RecognitionPublisher(Node):
 
             object_data = ObjectData(
                 object_class=obj_class,
-                object_accuracy=obj_accuracy / 100.0,
+                object_accuracy=obj_accuracy,
                 object_position=object_position,
                 object_velocity=object_velocity,
                 object_heading=object_heading,

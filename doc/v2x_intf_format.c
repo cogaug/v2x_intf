@@ -41,13 +41,13 @@ typedef struct {
 } DetectedObjectCommonData;
 
 
-#define HDR             0x53415445
+#define HDR_FLAG        0x53415445
 #define RECOGNITION_MSG 0x016792
 #define SITUATION_MSG   0x016793
 #define NEGOTIATION_MSG 0x016794
 
 typedef struct {
-  unsigned int hdr;
+  unsigned int hdr_flag;
   unsigned int msgID;
   unsigned int msgLen;
 } v2x_intf_hdr_type;

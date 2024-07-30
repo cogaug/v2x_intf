@@ -22,27 +22,6 @@ class RecognitionSubscriber(Node):
         # self.subscription  # prevent unused variable warning
         self.connection_manager = connection_manager
 
-    def _calculate_offsets(self, lat1, lon1, lat2, lon2):
-        # Convert degrees to radians
-        lat1_rad = math.radians(lat1)
-        lon1_rad = math.radians(lon1)
-        lat2_rad = math.radians(lat2)
-        lon2_rad = math.radians(lon2)
-            
-        # Differences in coordinates
-        dlat = lat2_rad - lat1_rad
-        dlon = lon2_rad - lon1_rad
-            
-        # Mean latitude
-        mean_lat = (lat1_rad + lat2_rad) / 2
-            
-        # Calculate offsets
-        v2xconst.R = 6378137.0 # Radius of the Earth in meters
-        x_offset = v2xconst.R * dlon * math.cos(mean_lat)
-        y_offset = v2xconst.R * dlat
-            
-        return int(x_offset*10.0), int(y_offset*10.0) # convert to 0.1 meter unit
-
     def Recognition2V2XMsg(self, msg):
         # J3224의 sDSMTimeStamp format 구성
         sDSMTimeStamp = (
@@ -51,9 +30,12 @@ class RecognitionSubscriber(Node):
             msg.vehicle_time[2],  # day
             msg.vehicle_time[3],  # hour
             msg.vehicle_time[4],  # minute
-            msg.vehicle_time[5]*1000+msg.vehicle_time[6], # milliseconds
+            msg.vehicle_time[5]*1000+(msg.vehicle_time[6]//1000), # milliseconds
             9*60 # Timezone in minutes
         )
+        self.get_logger().info(f'msg.vehicle_time: {msg.vehicle_time}')
+        self.get_logger().info(f'--> sDSMTimeStamp: {sDSMTimeStamp}')
+
 
         # Create datetime objects, including milliseconds to calculate measurementTimeOffset
         dt1 = datetime.datetime(
@@ -70,6 +52,8 @@ class RecognitionSubscriber(Node):
             msg.vehicle_position[0]*1000*1000*10, # Latitude in 1/10th microdegree
             msg.vehicle_position[1]*1000*1000*10  # Longitude in 1/10th microdegree
         )
+        self.get_logger().info(f'msg.vehicle_position: {msg.vehicle_position}')
+        self.get_logger().info(f'--> position3D: {position3D}')
 
         positionAccuracy = (
             255,  # semiMajor
@@ -90,30 +74,48 @@ class RecognitionSubscriber(Node):
               obj.detection_time[5],  # second
               obj.detection_time[6]   # microsecond
             )
-            measurementTimeOffset = (dt2-dt1).total_seconds()*1000 # in milliseconds for MeasurementTimeOffset type
+            self.get_logger().info(f'obj.detection_time: {obj.detection_time}')
+
+            measurementTimeOffset = (dt2-dt1).total_seconds()*1000 # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
+            self.get_logger().info(f'--> measurementTimeOffset: {measurementTimeOffset}')
+            
             if measurementTimeOffset > 1500 or measurementTimeOffset < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
+              self.get_logger().info(f'--> measurementTimeOffset is out of range')
               continue
             
             object_id = msg.vehicle_id << 16 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
+            self.get_logger().info(f'--> object_id: {object_id:#X}')
+            
+            offsetX = int(obj.object_position[0]*10)
+            offsetY = int(obj.object_position[1]*10)
+            self.get_logger().info(f'obj.object_position {obj.object_position}')
+            self.get_logger().info(f'--> offsetX: {offsetX}, offsetY: {offsetY}')
 
-            offsetX, offsetY = self._calculate_offsets( msg.vehicle_position[0],  msg.vehicle_position[1], obj.object_position[0], obj.object_position[1])
             if offsetX > 32767 or offsetX < -32767 or offsetY > 32767 or offsetY < -32767 :
+                self.get_logger().info(f'--> offsetX or offsetY is out of range')
                 continue
             
             speed = int(obj.object_velocity / 0.02)
+            self.get_logger().info(f'obj.object_velocity: {obj.object_velocity}')
+            self.get_logger().info(f'--> speed: {speed}')
+
             if speed > 8191 :
-                continue
+                self.get_logger().info(f'--> speed is out of range')
+                speed = 8192 # represents "speed is unavailable"
             
             if obj.object_heading < 0.0 :
                 obj.object_heading += 360.0
             heading = int(((obj.object_heading)%360.0)/0.0125)  # in 0.0125 degree unit
+            self.get_logger().info(f'obj.object_heading: {obj.object_heading}')
+            self.get_logger().info(f'--> heading: {heading}')
             if heading > 28800 :
+                self.get_logger().info(f'--> heading is out of range')
                 continue
             
             packed_object = struct.pack(
               v2xconst.fDetectedObjectCommonData,
               obj.object_class,
-              int(obj.object_accuracy*100),
+              obj.object_accuracy,
               object_id,
               measurementTimeOffset,
               0, # timeConfidence

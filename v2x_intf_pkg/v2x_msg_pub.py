@@ -15,17 +15,16 @@ class V2XMsgsPub(Node):
     def timer_callback(self):
         od = Objects(
             detection_time = self.date_time(), # int32[7], year, month, day, hour, minute, second, microsecond
-            object_position = [0.434+float(self.cnt_run), 0.343+float(self.cnt_run)],
-            object_velocity = float(0.662+self.cnt_run),
+            object_position = [(0.434+float(self.cnt_run))%3276.0, (0.343+float(self.cnt_run))%3276.0],
+            object_velocity = (0.662+float(self.cnt_run))%163.0,
+            object_heading =(0.1+float(self.cnt_run))%359.9,
             object_class = (self.cnt_run)%9,
-            object_heading =float(0.1+float(self.cnt_run)),
-            recognition_accuracy = float(self.cnt_run+50.0)
+            recognition_accuracy = (float(self.cnt_run)+50.0)%100.0
         )
         re = Recognition(
             vehicle_id = 1,  # int16
             vehicle_time = self.date_time(), # int32[7], year, month, day, hour, minute, second, microsecond
-            vehicle_position = [0.321+float(self.cnt_run), 0.33232+float(self.cnt_run)],
-            # vehicle_velocity = float(self.cnt_run+0.412),
+            vehicle_position = [(0.321+float(self.cnt_run))%90.0, (0.33232+float(self.cnt_run))%180.0],
             object_data = [od]
         )
         self.pub_rec.publish(re)
