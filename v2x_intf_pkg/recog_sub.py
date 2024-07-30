@@ -76,7 +76,8 @@ class RecognitionSubscriber(Node):
             )
             self.get_logger().info(f'obj.detection_time: {obj.detection_time}')
 
-            measurementTimeOffset = (dt2-dt1).total_seconds()*1000 # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
+            measurementTimeOffset = int((dt2-dt1).total_seconds()*1000) # in milliseconds for MeasurementTimeOffset type # it should have -1500 ~ 1500 in 1ms unit (-1.5 sec ~ 1.5 sec)
+            self.get_logger().info(f'--> (dt2-dt1).total_seconds(): {(dt2-dt1).total_seconds()}')
             self.get_logger().info(f'--> measurementTimeOffset: {measurementTimeOffset}')
             
             if measurementTimeOffset > 1500 or measurementTimeOffset < -1500 : # sDSMTimeStamp보다 1.5초 빨리 디텍트한 객체
