@@ -35,7 +35,7 @@ class Parser :
 
 class RecognitionMsg :
   def __init__(self):
-    pass
+    super().__init__('recognition_msg_node')
 
   def fromV2XMsg(self, data): # Header를 제외한 데이터를 수신받아서 Recognition 메시지로 변환
     first_part_size = struct.calcsize(v2xconst.fFirstPart)
