@@ -40,8 +40,8 @@ class TcpConnectionManager:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
             if ready_to_read:
                 received_data = self.client_socket.recv(1024)
-                self.response_buffer += received_data
-                return self.response_buffer.decode()
+                self.receive_buffer += received_data
+                return self.receive_buffer.decode()
             return None
 
     def close_connection(self):
