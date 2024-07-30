@@ -3,7 +3,7 @@ class V2XConstants:
     OBU_PORT = 9201
     R = 6378137.0 # Radius of the Earth in meters
 
-    fmsgHdrType = '<III'
+    fmsgHdrType = f'<III'
     fDDateTimeType = 'HBBBBHh'  # year, month, day, hour, minute, second, microsecond
     fPosition3D = 'll'          # (latitude, longitude)
     fPositionalAccuracy = 'BBH'

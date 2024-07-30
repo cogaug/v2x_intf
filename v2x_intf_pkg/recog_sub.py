@@ -153,9 +153,9 @@ class RecognitionSubscriber(Node):
         # Ref : v2x_intf_hdr_type
         hdr_data = struct.pack(
             v2xconst.fmsgHdrType,
-            int(v2xconst.HDR_FLAG),          # hdr
-            int(v2xconst.MSG_RECOGNITION),   # msgID for recognition
-            int(len(packed_data))            # msgLen
+            v2xconst.HDR_FLAG,          # hdr
+            v2xconst.MSG_RECOGNITION,   # msgID for recognition
+            len(packed_data)            # msgLen
         )
 
         self.get_logger().info(f'Header data: {hdr_data}, length : {len(hdr_data)}')
