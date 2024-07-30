@@ -29,7 +29,7 @@ class Parser :
       self.info('Invalid header flag: %d' % hdr_flag)
       return None
     else :
-      if msg_type is v2xconst.MSG_RECOGNITION:
+      if int(msg_type) is int(v2xconst.MSG_RECOGNITION):
         return RecognitionMsg(self.logger).fromV2XMsg(pkd_data[header_size:])
       else :
         self.logger.info(f'Unknown message type: {msg_type} != {v2xconst.MSG_RECOGNITION}')
