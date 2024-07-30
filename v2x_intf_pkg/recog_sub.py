@@ -49,11 +49,18 @@ class RecognitionSubscriber(Node):
         )
 
         position3D = (
-            msg.vehicle_position[0]*1000*1000*10, # Latitude in 1/10th microdegree
-            msg.vehicle_position[1]*1000*1000*10  # Longitude in 1/10th microdegree
+            int(msg.vehicle_position[0]*1000*1000*10), # Latitude in 1/10th microdegree
+            int(msg.vehicle_position[1]*1000*1000*10)  # Longitude in 1/10th microdegree
         )
         self.get_logger().info(f'msg.vehicle_position: {msg.vehicle_position}')
         self.get_logger().info(f'--> position3D: {position3D}')
+        if position3D[0] > 900000000 or position3D[0] < -900000000 :
+            self.get_logger().info(f'--> Latitude is out of range')
+            return None
+        
+        if position3D[1] > 1800000000 or position3D[1] < -1800000000 :
+            self.get_logger().info(f'--> Longitude is out of range')
+            return None
 
         positionAccuracy = (
             255,  # semiMajor
@@ -112,7 +119,7 @@ class RecognitionSubscriber(Node):
             if heading > 28800 :
                 self.get_logger().info(f'--> heading is out of range')
                 continue
-            
+          
             packed_object = struct.pack(
               v2xconst.fDetectedObjectCommonData,
               obj.object_class,
@@ -156,8 +163,9 @@ class RecognitionSubscriber(Node):
         try:
             data = self.Recognition2V2XMsg(msg)
             # Send the received message data to the server over the shared TCP connection
-            response = self.connection_manager.send_data(data)
-            if response:
-                self.get_logger().info(f'Received response from server: {response}')
+            if data :
+              response = self.connection_manager.send_data(data)
+              if response:
+                  self.get_logger().info(f'Received response from server: {response}')
         except Exception as e:
             self.get_logger().error(f'Error processing recognition message: {e}')
