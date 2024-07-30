@@ -32,7 +32,7 @@ class V2XMsgsPub(Node):
         self.cnt_run += 1
 
     def date_time(self, delay):
-        now = datetime.now() + timedelta(microseconds=delay)
+        now = datetime.now() + timedelta(milliseconds==delay)
         now_array=[
             now.year,
             now.month,

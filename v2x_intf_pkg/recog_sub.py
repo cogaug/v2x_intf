@@ -84,7 +84,7 @@ class RecognitionSubscriber(Node):
               self.get_logger().info(f'--> measurementTimeOffset is out of range')
               continue
             
-            object_id = msg.vehicle_id << 16 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
+            object_id = msg.vehicle_id << 8 + idx  # vehicle_id는 제어부에서 임의로 설정되는데 현재 3대의 자율차에 1,2,3으로 할당.
             self.get_logger().info(f'--> object_id: {object_id:#X}')
             
             offsetX = int(obj.object_position[0]*10)
