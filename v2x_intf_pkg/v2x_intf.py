@@ -1,11 +1,13 @@
 import rclpy as rclpy
 from rclpy.node import Node
+from v2x_intf_pkg.v2x_msg_conv import Parser
 # from v2x_msgs.msg import Recognition, Objects
 
 from v2x_intf_pkg.tcpconn_man import TcpConnectionManager
 from v2x_intf_pkg.recog_sub import RecognitionSubscriber
 
 def main(args=None):
+    parser = Parser()
     rclpy.init(args=args)
     connection_manager = TcpConnectionManager()
     recognition_subscriber = RecognitionSubscriber(connection_manager)
@@ -20,6 +22,7 @@ def main(args=None):
                 received_data = connection_manager.receive_data()
                 if received_data is not None:
                     main_node.get_logger().info(f'Received from server: {received_data}\n\n')
+                    parser.parse(received_data)
 
             rclpy.spin_once(main_node, timeout_sec=0.1)  # Spin the main node for a single iteration
             rclpy.spin_once(recognition_subscriber, timeout_sec=0.1)  # Spin the subscriber node for a single iteration

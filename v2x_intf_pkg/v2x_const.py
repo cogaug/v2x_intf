@@ -1,6 +1,9 @@
 class V2XConstants:
     OBU_IP = 'localhost'
     OBU_PORT = 9201
+
+    EQUIPMENT_TYPE = 2 # OBU
+
     R = 6378137.0 # Radius of the Earth in meters
 
     fmsgHdrType = '<III'
