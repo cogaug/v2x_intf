@@ -1,5 +1,5 @@
 class V2XConstants:
-    OBU_IP = '192.168.2.100'
+    OBU_IP = 'localhost'
     OBU_PORT = 9201
     R = 6378137.0 # Radius of the Earth in meters
 
