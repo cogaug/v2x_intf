@@ -9,6 +9,11 @@ class Parser :
     self.logger = logger
 
   def parse(self, pkd_data):
+    # Ensure pkd_data is bytes
+    if not isinstance(pkd_data, bytes):
+      self.logger.error("Input data is not bytes")
+      return None
+
     # Unpack the header
     header_size = struct.calcsize(v2xconst.fmsgHdrType)
     hdr_data = pkd_data[:header_size]
