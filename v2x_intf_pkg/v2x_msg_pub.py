@@ -1,6 +1,6 @@
 import rclpy as rp 
 from rclpy.node import Node
-from v2x_msgs.msg import Recognition, Objects
+from v2x_msgs.msg import Recognition, Object
 from datetime import datetime, timedelta
 
 class V2XMsgsPub(Node):
@@ -13,7 +13,7 @@ class V2XMsgsPub(Node):
         # self.recog = Recognition()
 
     def timer_callback(self):
-        od = Objects(
+        od = Object(
             detection_time = self.date_time(10*((self.cnt_run)%10)), # int32[7], year, month, day, hour, minute, second, microsecond
             object_position = [(0.434+float(self.cnt_run))%3276.0, (0.343+float(self.cnt_run))%3276.0],
             object_velocity = (0.662+float(self.cnt_run))%163.0,
