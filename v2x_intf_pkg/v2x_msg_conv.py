@@ -23,7 +23,7 @@ class Parser :
     msg_type = hdr_values[1]
     msg_len = hdr_values[2]
     self.logger.info(f'Header data: {hdr_data}')
-    self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_recomsg_typenition: {msg_type:#X}, msg_len: {msg_len}')
+    self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_type: {msg_type:#X}, msg_len: {msg_len}')
 
     if hdr_flag is v2xconst.HDR_FLAG:
       self.info('Invalid header flag: %d' % hdr_flag)
@@ -32,7 +32,7 @@ class Parser :
       if msg_type is v2xconst.MSG_RECOGNITION:
         return RecognitionMsg(self.logger).fromV2XMsg(pkd_data[header_size:])
       else :
-        self.logger.info('Unknown message type: %d' % msg_type)
+        self.logger.info(f'Unknown message type: {msg_type:#X}')
         return None
     
 
