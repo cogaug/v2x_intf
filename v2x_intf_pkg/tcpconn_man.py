@@ -27,8 +27,8 @@ class TcpConnectionManager:
             with self.lock:
                 try:
                     # Serialize and send the data to the server
-                    serialized_data = self.serialize_data(data)  # Implement serialization function
-                    self.client_socket.send(serialized_data)
+                    # serialized_data = self.serialize_data(data)  # Implement serialization function
+                    self.client_socket.send(data)
                     
                 except Exception as e:
                     print('Error:', str(e))
@@ -48,9 +48,9 @@ class TcpConnectionManager:
         with self.lock:
             self.client_socket.close()
 
-    def serialize_data(self, data):
-        # Implement serialization logic for your data here
-        # For example, you can use pickle or another serialization method
-        # Return the serialized data as bytes
-        return bytes(str(data), 'utf-8')
+    # def serialize_data(self, data):
+    #     # Implement serialization logic for your data here
+    #     # For example, you can use pickle or another serialization method
+    #     # Return the serialized data as bytes
+    #     return bytes(str(data), 'utf-8')
 
