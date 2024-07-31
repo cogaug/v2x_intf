@@ -29,7 +29,7 @@ class TcpConnectionManager:
                     # Serialize and send the data to the server
                     # serialized_data = self.serialize_data(data)  # Implement serialization function
                     self.client_socket.send(data)
-                    
+                    print(f'Sent to server: {data}')
                 except Exception as e:
                     print('Error:', str(e))
                     return None
