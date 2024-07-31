@@ -37,7 +37,8 @@ class TcpConnectionManager:
     def receive_data(self):
         with self.lock:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
-            if ready_to_read:
+            print("ready_to_read", ready_to_read)
+            if ready_to_read:                
                 received_data = self.client_socket.recv(1024)
                 # self.receive_buffer += received_data
                 return received_data #.decode()

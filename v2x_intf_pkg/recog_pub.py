@@ -21,7 +21,7 @@ class RecognitionPublisher(Node):
         # Run the blocking receive_data method in a separate thread
         received_data = await self.loop.run_in_executor(None, self.connection_manager.receive_data)
         if received_data is not None:
-          self.get_logger().info(f'Received from server: {received_data}\n\n')
+          self.get_logger().info(f'Received from server: {received_data}')
                   
           # Parse the received data
           recognition_data = self.parser.parse(received_data)

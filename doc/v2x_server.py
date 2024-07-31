@@ -31,6 +31,7 @@ def start_server():
 
 
                     connection.sendall(data)  # Echo back the received data
+                    print(f"Sent back to {client_address}")
 
 if __name__ == "__main__":
     start_server()
