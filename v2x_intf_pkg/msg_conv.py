@@ -216,14 +216,6 @@ class RecognitionMsg :
       65535 # orientation
     )
 
-    first_part = struct.pack(
-      v2xconst.fFirstPart,
-      v2xconst.EQUIPMENT_TYPE,
-      *sDSMTimeStamp,
-      *position3D,
-      *positionAccuracy,
-      num_object
-    )
 
     packed_objects = b''
     num_object = 0
@@ -294,6 +286,15 @@ class RecognitionMsg :
         self.logger.info(f'--> Support 256 objects')
         break
 
+
+    first_part = struct.pack(
+      v2xconst.fFirstPart,
+      v2xconst.EQUIPMENT_TYPE,
+      *sDSMTimeStamp,
+      *position3D,
+      *positionAccuracy,
+      num_object
+    )
 
     packed_data = first_part + packed_objects
 
