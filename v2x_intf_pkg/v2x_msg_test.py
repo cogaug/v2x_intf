@@ -19,7 +19,7 @@ class V2XMsgsPub(Node):
             object_velocity = (0.662+float(self.cnt_run))%163.0,
             object_heading =(0.1+float(self.cnt_run))%359.9,
             object_class = (self.cnt_run)%9,
-            recognition_accuracy = (float(self.cnt_run)+50.0)%100.0
+            recognition_accuracy = self.cnt_run%100
         )
         re = Recognition(
             vehicle_id = 1,  # int16
