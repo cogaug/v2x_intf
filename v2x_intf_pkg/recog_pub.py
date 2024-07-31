@@ -1,91 +1,33 @@
 # This file to add the publish function for the v2x interface messages.
 import rclpy
 from rclpy.node import Node
-from v2x_msgs.msg import Recognition, Object
-from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
-import struct
+from v2x_msgs.msg import Recognition
+from v2x_intf_pkg.msg_conv import Parser
 
 class RecognitionPublisher(Node):
-    def __init__(self):
-        super().__init__('recognition_publisher')
+  def __init__(self, connection_manager):
+    super().__init__('recognition_publisher')
+    self.connection_manager = connection_manager
+    self.parser = Parser(self.get_logger())
+    self.recognition_publisher = self.create_publisher(Recognition, 'v2x_msgs/r_recognition', 10)   
+    self.timer = self.create_timer(0.1, self.timer_callback)
 
-    def _proc_recognition_msg(self, data) : # data contains main message and object data
-        main_msg_size = struct.calcsize(v2xconst.fFirstPart)
-        main_msg_data = data[: main_msg_size]
-        (equipmentType, year, month, day, hour, minute, second, offset,
-         latitude, longitude, semiMajor, semiMinor, orientation, numDetectedObjects) = struct.unpack(fFirstPart, main_msg_data)
-        
-        self.get_logger().info('Equipment Type: %d' % equipmentType)
+  def timer_callback(self):
+    if self.connection_manager.obu_connected:
+      received_data = self.connection_manager.receive_data()
+      if received_data is not None:
+        self.get_logger().info(f'Received from server: {received_data}\n\n')
+                
+        # Parse the received data
+        recognition_data = self.parser.parse(received_data)
 
-        vehicle_time = [year, month, day, hour, minute, second // 1000, second % 1000]
-        vehicle_pos = [latitude / (1000 * 1000 * 10), longitude / (1000 * 1000 * 10)]
+        # Convert parsed data to Recognition message
+        recognition_msg = Recognition()
+        # Assuming recognition_data contains the necessary fields for the Recognition message
+        # recognition_msg.field1 = recognition_data.field1  # Modify these fields based on actual message fields
+        # recognition_msg.field2 = recognition_data.field2
+        # Add more fields as necessary
 
-        # Unpack detected objects
-        fDetectedObjectCommonData = '<BBHhBhhBHBHB'
-        object_data_list = []
-        for i in range(numDetectedObjects):
-            obj_data_start = main_msg_size + i * struct.calcsize(fDetectedObjectCommonData)
-            obj_data_end = obj_data_start + struct.calcsize(fDetectedObjectCommonData)
-            obj_data = data[obj_data_start:obj_data_end]
-
-            (obj_class, obj_accuracy, object_id, measurementTime,
-             timeConfidence, offsetX, offsetY, posConfidence,
-             speed, speedConfidence, heading, headingConfidence) = struct.unpack(fDetectedObjectCommonData, obj_data)
-
-            object_datetime = vehicle_time[:6] + [0]  # Assuming milliseconds are zero as it's not provided
-            object_position = [
-                vehicle_pos[0] + offsetX / (10 * 6378137.0 * math.cos(math.radians(vehicle_pos[0]))),
-                vehicle_pos[1] + offsetY / (10 * 6378137.0)
-            ]
-            object_velocity = speed * 0.02
-            object_heading = heading * 0.0125
-
-            object_data = ObjectData(
-                object_class=obj_class,
-                object_accuracy=obj_accuracy,
-                object_position=object_position,
-                object_velocity=object_velocity,
-                object_heading=object_heading,
-                datetime=object_datetime
-            )
-            object_data_list.append(object_data)
-
-        recognition_msg = Recognition(
-            vehicle_time=vehicle_time,
-            vehicle_pos=vehicle_pos,
-            datetime=vehicle_time,  # Assuming vehicle_time is the datetime of the message
-            object_data=object_data_list
-        )
-
-        return recognition_msg
-
-
-
-    def V2XMsgParser(self, data) :
-        # Unpack the header
-        fmsgHdrType = '<III'
-        hdr_size = struct.calcsize(fmsgHdrType)
-        hdr_data = data[:hdr_size]
-
-        # TODO : Recognition만 처리하면 안되는구나...
-        hdr, msgID, msgLen = struct.unpack(fmsgHdrType, hdr_data)
-        if msgLen != len(data) - hdr_size : 
-            self.get_logger().info('Invalid message length: %d' % msgLen)
-            return
-        
-        if hdr == 0x53415445 : # received correct packet        
-            if msgID == 0x016792 :
-                # Unpack the recognition message
-                self._proc_recognition_msg(data[hdr_size:])
-            else :
-                self.get_logger().info('Unknown message ID: %d' % msgID)
-        else :
-            self.get_logger().info('Unknown header: %d' % hdr)
-
-        return
-        
-    def proc_v2x_msgs(self, r_data) :
-        pass
-
-
-
+        # Publish the Recognition message
+        # self.recognition_publisher.publish(recognition_msg)
+        # self.get_logger().info(f'Published recognition message: {recognition_msg}') 

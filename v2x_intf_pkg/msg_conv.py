@@ -5,10 +5,34 @@ from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
 
 
 class Parser :
+  """
+  A class to parse incoming data into ROS2 messages according to the msg_type field.
+
+  Attributes:
+    logger : Logger
+      The logger object to log messages.
+  """  
   def __init__(self, logger):
+    """
+    Constructs the necessary attributes for the Parser object.
+
+    Args:
+      logger : Logger
+        The logger object to log messages.
+    """
     self.logger = logger
 
   def parse(self, pkd_data):
+    """
+    Parses the packed data into a Recognition message.
+
+    Args:
+      pkd_data : bytes
+        The packed data to be parsed.
+
+    Returns:
+      Recognition: The parsed Recognition message or None if parsing fails.
+    """
     # Ensure pkd_data is bytes
     if not isinstance(pkd_data, bytes):
       self.logger.error("Input data is not bytes")
@@ -22,11 +46,7 @@ class Parser :
     hdr_flag = hdr_values[0]
     msg_type = hdr_values[1]
     msg_len = hdr_values[2]
-
     
-    self.logger.info(f'msg_type is {type(msg_type)}')
-    self.logger.info(f'v2xconst.MSG_RECOGNITION is {type(v2xconst.MSG_RECOGNITION)}')
-
     self.logger.info(f'Header data: {hdr_data}')
     self.logger.info(f'--> hdr_flag: {hdr_flag:#X}, msg_type: {msg_type:#X}, msg_len: {msg_len}')
 
@@ -34,6 +54,9 @@ class Parser :
       self.info('Invalid header flag: %d' % hdr_flag)
       return None
     else :
+      if len(pkd_data) - header_size != msg_len:  # Check message length
+        self.logger.error(f"Data size {len(pkd_data) - header_size} does not match header msg_len {msg_len}")
+        return None
       if msg_type == v2xconst.MSG_RECOGNITION :
         return RecognitionMsg(self.logger).fromV2XMsg(pkd_data[header_size:])
       else :
@@ -42,10 +65,34 @@ class Parser :
     
 
 class RecognitionMsg :
+  """
+  A class to handle Recognition messages.
+
+  Attributes:
+    logger : Logger
+      The logger object to log messages.
+  """  
   def __init__(self, logger):
+    """
+    Constructs the necessary attributes for the RecognitionMsg object.
+
+    Args:
+      logger : Logger
+        The logger object to log messages.
+    """
     self.logger = logger
 
   def fromV2XMsg(self, data): # Header를 제외한 데이터를 수신받아서 Recognition 메시지로 변환
+    """
+    Converts received data into a Recognition message.
+
+    Args:
+      data : bytes
+        The data received, excluding the header.
+
+    Returns:
+      Recognition: The constructed Recognition message.
+    """
     first_part_size = struct.calcsize(v2xconst.fFirstPart)
     first_part_data = data[:first_part_size]
     first_part_values = struct.unpack(v2xconst.fFirstPart, first_part_data)
@@ -63,10 +110,25 @@ class RecognitionMsg :
     seconds = milliseconds // 1000
     microseconds = (milliseconds % 1000) * 1000
     vehicle_time = vehicle_time[:5] + (seconds, microseconds,)
+    self.logger.info(f'--> vehicle_time: {vehicle_time}')
+
+    # Calculate the expected length of the detected objects part
+    detected_object_size = struct.calcsize(v2xconst.fDetectedObjectCommonData)
+    expected_detected_objects_length = num_detected_objects * detected_object_size
+
+    # Check if the length of detected objects part matches the expected length
+    actual_detected_objects_length = len(data) - first_part_size
+    if actual_detected_objects_length != expected_detected_objects_length:
+      self.logger.error(f'Detected objects data length {actual_detected_objects_length} does not match expected length {expected_detected_objects_length}')
+      return None
+
 
     # Parse the detected objects
     detected_objects = []
-    detected_object_size = struct.calcsize(v2xconst.fDetectedObjectCommonData)
+    if num_detected_objects > 256:
+      self.logger.error(f'Number of detected objects {num_detected_objects} exceeds maximum 256, set to 256')
+      num_detected_objects = 256
+
     for i in range(num_detected_objects):
       start_index = first_part_size + i * detected_object_size
       end_index = start_index + detected_object_size
@@ -99,7 +161,19 @@ class RecognitionMsg :
 
       return msg
 
+  
   def toV2XMsg(self, msg):
+    """
+    Converts a Recognition message into a packed data format.
+
+    Args:
+      msg : Recognition
+        The Recognition message to be converted.
+
+    Returns:
+      bytes: The packed data format of the Recognition message.
+    """
+
     # J3224의 sDSMTimeStamp format 구성
     sDSMTimeStamp = (
       msg.vehicle_time[0],  # year
@@ -142,10 +216,19 @@ class RecognitionMsg :
       65535 # orientation
     )
 
+    first_part = struct.pack(
+      v2xconst.fFirstPart,
+      v2xconst.EQUIPMENT_TYPE,
+      *sDSMTimeStamp,
+      *position3D,
+      *positionAccuracy,
+      num_object
+    )
+
     packed_objects = b''
     num_object = 0
     for idx, obj in enumerate(msg.object_data) :
-    # Create datetime objects, including milliseconds to calculate measurementTimeOffset
+      # Create datetime objects, including milliseconds to calculate measurementTimeOffset
       dt2 = datetime.datetime(
         obj.detection_time[0],  # year
         obj.detection_time[1],  # month
@@ -195,7 +278,6 @@ class RecognitionMsg :
       packed_object = struct.pack(
         v2xconst.fDetectedObjectCommonData,
         obj.object_class,
-        int(obj.recognition_accuracy),
         object_id,
         measurementTimeOffset,
         0, # timeConfidence
@@ -208,16 +290,12 @@ class RecognitionMsg :
       )
       packed_objects += packed_object
       num_object += 1
-      packed_data = struct.pack(
-      v2xconst.fFirstPart,
-      v2xconst.EQUIPMENT_TYPE,
-      *sDSMTimeStamp,
-      *position3D,
-      *positionAccuracy,
-      num_object
-    )
-    packed_data += packed_objects
-    self.logger.info(f'packed_data length : {len(packed_data)}')
+      if num_object >= 256 :
+        self.logger.info(f'--> Support 256 objects')
+        break
+
+
+    packed_data = first_part + packed_objects
 
     # Convert header to C struct data type
     # Ref : v2x_intf_hdr_type
@@ -227,6 +305,5 @@ class RecognitionMsg :
       v2xconst.MSG_RECOGNITION,   # msgID for recognition
       len(packed_data)            # msgLen
     )
-    self.logger.info(f'Header data: {hdr_data}, length : {len(hdr_data)}')
 
-    return hdr_data+packed_data
+    return hdr_data + packed_data

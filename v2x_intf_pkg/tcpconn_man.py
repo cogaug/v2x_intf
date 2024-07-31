@@ -34,7 +34,6 @@ class TcpConnectionManager:
                     print('Error:', str(e))
                     return None
 
-
     def receive_data(self):
         with self.lock:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
@@ -47,10 +46,3 @@ class TcpConnectionManager:
     def close_connection(self):
         with self.lock:
             self.client_socket.close()
-
-    # def serialize_data(self, data):
-    #     # Implement serialization logic for your data here
-    #     # For example, you can use pickle or another serialization method
-    #     # Return the serialized data as bytes
-    #     return bytes(str(data), 'utf-8')
-

@@ -1,11 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from v2x_msgs.msg import Recognition
-import struct
-import datetime
-import math
-from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
-from v2x_intf_pkg.v2x_msg_conv import RecognitionMsg
+from v2x_intf_pkg.msg_conv import RecognitionMsg
 
 class RecognitionSubscriber(Node):
     def __init__(self, connection_manager):
