@@ -11,7 +11,7 @@ class RecognitionPublisher(Node):
     super().__init__('recognition_publisher')
     self.connection_manager = connection_manager
     self.parser = Parser(self.get_logger())
-    self.recognition_publisher = self.create_publisher(Recognition, 'v2x_msgs/r_recognition', 10)   
+    self.recognition_publisher = self.create_publisher(Recognition, 'v2x/r_recognition', 10)   
     self.loop = asyncio.get_event_loop()
     self.loop.create_task(self.receive_data_async())
     self.get_logger().info('Recognition publisher initialized')

@@ -11,7 +11,7 @@ class RecognitionSubscriber(Node):
     self.equipmentType = 2 # unknown (0), rsu (1), obu (2)
     self.subscription = self.create_subscription(
             Recognition,
-            'v2x_msgs/recognition',
+            'v2x/recognition',
             self.recognition_callback,
             10
         )

@@ -8,7 +8,7 @@ class V2XMsgsPub(Node):
         super().__init__('v2x_msg_pub')
         self.timer_period = 1.0
         self.cnt_run = 1
-        self.pub_rec = self.create_publisher(Recognition, 'v2x_msgs/recognition', 10)
+        self.pub_rec = self.create_publisher(Recognition, 'v2x/recognition', 10)
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
         # self.recog = Recognition()
 
