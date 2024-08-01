@@ -1,7 +1,7 @@
 # This file to add the publish function for the v2x interface messages.
 import rclpy
 from rclpy.node import Node
-from v2x_msgs.msg import Recognition
+from v2x_intf_msg.msg import Recognition
 from v2x_intf_pkg.msg_conv import Parser
 import asyncio
 
