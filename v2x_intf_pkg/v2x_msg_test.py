@@ -13,18 +13,28 @@ class V2XMsgsPub(Node):
         # self.recog = Recognition()
 
     def timer_callback(self):
+        detection_time = self.date_time(30*((self.cnt_run)%10))
+        object_position = [(0.434+float(self.cnt_run))%3276.0, (0.343+float(self.cnt_run))%3276.0],
+        object_velocity = (0.662+float(self.cnt_run))%163.0,
+        object_heading =(0.1+float(self.cnt_run))%359.9,
+        object_class = (self.cnt_run)%9,
+        recognition_accuracy = self.cnt_run%100
+        self.get_logger().info(f'{self.cnt_run} detection_time={detection_time}, object_position={object_position}, object_velocity={object_velocity}, object_heading={object_heading}, object_class={object_class}, recognition_accuracy={recognition_accuracy}')
         od = Object(
-            detection_time = self.date_time(10*((self.cnt_run)%10)), # int32[7], year, month, day, hour, minute, second, microsecond
-            object_position = [(0.434+float(self.cnt_run))%3276.0, (0.343+float(self.cnt_run))%3276.0],
-            object_velocity = (0.662+float(self.cnt_run))%163.0,
-            object_heading =(0.1+float(self.cnt_run))%359.9,
-            object_class = (self.cnt_run)%9,
-            recognition_accuracy = self.cnt_run%100
+            detection_time = detection_time,
+            object_position = object_position,
+            object_velocity = object_velocity,
+            object_heading = object_heading,
+            object_class = object_class,
+            recognition_accuracy = recognition_accuracy    
         )
+
+        vehicle_position = [(0.321+float(self.cnt_run))%90.0, (0.33232+float(self.cnt_run))%180.0]
+        self.get_logger().info(f'{self.cnt_run} vehicle_position={vehicle_position}')
         re = Recognition(
             vehicle_id = 1,  # int16
             vehicle_time = self.date_time(0), # int32[7], year, month, day, hour, minute, second, microsecond
-            vehicle_position = [(0.321+float(self.cnt_run))%90.0, (0.33232+float(self.cnt_run))%180.0],
+            vehicle_position = vehicle_position,
             object_data = [od]
         )
         self.pub_rec.publish(re)
