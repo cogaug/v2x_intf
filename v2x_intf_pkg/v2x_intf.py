@@ -25,8 +25,8 @@ def main(args=None):
     finally:
       executor.shutdown()
 
-    ros_thread = threading.Thread(target=ros_spin)
-    ros_thread.start()
+  ros_thread = threading.Thread(target=ros_spin)
+  ros_thread.start()
 
   try:
     loop.run_forever()

@@ -17,7 +17,8 @@ class RecognitionSubscriber(Node):
         
     # self.subscription  # prevent unused variable warning
     self.connection_manager = connection_manager
-
+    self.get_logger().info('Recognition subscriber initialized')
+    
   def recognition_callback(self, msg):
     self.get_logger().info('Received recognition message')
     recogMsg = RecognitionMsg(self.get_logger())
