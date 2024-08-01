@@ -20,7 +20,7 @@ class RecognitionSubscriber(Node):
     self.get_logger().info('Recognition subscriber initialized')
     
   def recognition_callback(self, msg):
-    self.get_logger().info('Received recognition message')
+    self.get_logger().info(f'Received recognition message {msg}')
     recogMsg = RecognitionMsg(self.get_logger())
     try:
       data = recogMsg.toV2XMsg(msg)
