@@ -1,4 +1,4 @@
-from v2x_msgs.msg import Recognition, Object
+from v2x_intf_msgs.msg import Recognition, Object
 import struct
 import datetime
 from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
