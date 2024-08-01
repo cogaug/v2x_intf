@@ -19,16 +19,16 @@ def main(args=None):
 
   loop = asyncio.get_event_loop()
 
-  def run_ros2():
+  def ros_spin():
     try :
       executor.spin()
     finally:
       executor.shutdown()
 
-    ros_thread = threading.Thread(target=run_ros2)
+    ros_thread = threading.Thread(target=ros_spin)
     ros_thread.start()
 
-    loop.run_forever() 
+    loop = asyncio.get_event_loop()
 
   try:
     loop.run_forever()

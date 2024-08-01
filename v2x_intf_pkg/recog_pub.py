@@ -40,3 +40,7 @@ class RecognitionPublisher(Node):
             # Publish the Recognition message
             self.recognition_publisher.publish(recognition_msg)
             self.get_logger().info(f'Published recognition message: {recognition_msg}')    
+
+  def shutdown(self):
+    self.connection_manager.close_connection()
+    self.destroy_node()
