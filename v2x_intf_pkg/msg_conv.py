@@ -101,9 +101,9 @@ class RecognitionMsg :
     self.logger.info(f"V2X Recognition message from {'OBU' if equipment_type == 2 else 'RSU'}")
     vehicle_time = first_part_values[1:8]  # year, month, day, hour, minute, milliseconds, timeoffset
     self.logger.info(f'vehicle_time: {vehicle_time}')
-    vehicle_time = vehicle_time[:6] + (vehicle_time[6] // 1000, (vehicle_time[6] % 1000)*1000,)  # milliseconds to seconds and microseconds
-    self.logger.info(f'---> vehicle_time: {vehicle_time}')
-                                       
+    vehicle_time = vehicle_time[:5] + (vehicle_time[5] // 1000, (vehicle_time[5] % 1000)*1000,)  # milliseconds to seconds and microseconds
+    self.logger.info(f'--->vehicle_time: {vehicle_time}')
+
     vehicle_position = first_part_values[8:10]  # latitude, longitude
     positional_accuracy = first_part_values[10:13]  # semiMajor, semiMinor, orientation
     num_detected_objects = first_part_values[13]
@@ -111,12 +111,6 @@ class RecognitionMsg :
     self.logger.info(f'First part data: {first_part_data}')
     self.logger.info(f'--> equipment_type: {equipment_type}, vehicle_time: {vehicle_time}, vehicle_position: {vehicle_position}, positional_accuracy: {positional_accuracy}, num_detected_objects: {num_detected_objects}')
 
-    # Convert milliseconds back to seconds and microseconds
-    milliseconds = vehicle_time[5]
-    seconds = milliseconds // 1000
-    microseconds = (milliseconds % 1000) * 1000
-    vehicle_time = vehicle_time[:5] + (seconds, microseconds,)
-    self.logger.info(f'--> vehicle_time: {vehicle_time}')
 
     # Calculate the expected length of the detected objects part
     detected_object_size = struct.calcsize(v2xconst.fDetectedObjectCommonData)

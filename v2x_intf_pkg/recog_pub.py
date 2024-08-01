@@ -18,13 +18,10 @@ class RecognitionPublisher(Node):
   async def receive_data_async(self):
     self.get_logger().info('Starting receive_data_async')
     while rclpy.ok():
-      self.get_logger().info('Checking for received data, {self.connection_manager.obu_connected}')
       if self.connection_manager.obu_connected:
         # Run the blocking receive_data method in a separate thread
         received_data = await self.loop.run_in_executor(None, self.connection_manager.receive_data)
-        self.get_logger().info(f'Received from server: {received_data}')
         if received_data is not None:
-          self.get_logger().info(f'Received from server: {received_data}')
                   
           # Parse the received data
           recognition_data = self.parser.parse(received_data)
