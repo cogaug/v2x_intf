@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'v2x_intf'
+package_name = 'v2x_intf_pkg'
 
 setup(
     name=package_name,
@@ -20,9 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'v2x_intf_node = v2x_intf.v2x_intf_node:main',
-            'v2x_subscriber = v2x_intf.v2x_subscriber:main',
-            'v2x_msg_pub = v2x_intf.v2x_msg_pub:main',
+            'v2x_intf_node = v2x_intf_pkg.v2x_intf:main',
+            # 'v2x_subscriber = v2x_intf.v2x_subscriber:main',
+            'v2x_msg_test = v2x_intf_pkg.v2x_msg_test:main',
         ],
     },
 )
