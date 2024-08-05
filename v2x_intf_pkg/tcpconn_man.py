@@ -20,17 +20,36 @@ class TcpConnectionManager:
             self.obu_connected = True
         except Exception as e:
             print('Error:', str(e))
+            self.client_socket = None
             self.obu_connected = False
+
+    def open_connection(self):
+        with self.lock:
+            if self.client_socket is not None:
+                print(f"Previous connection exists with self.obu_connected = {self.obu_connected}")
+                return self.obu_connected
+            
+            try:
+                self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.client_socket.connect((self.obu_ip, self.obu_port))
+                self.obu_connected = True
+                return self.obu_connected
+            except Exception as e:
+                print('open_connection Error:', str(e))
+                self.client_socket = None
+                self.obu_connected = False
+                return self.obu_connected
 
     def send_data(self, data):
         if self.obu_connected :
             with self.lock:
                 try:
-                    # Serialize and send the data to the server
-                    # serialized_data = self.serialize_data(data)  # Implement serialization function
                     self.client_socket.send(data)
                 except Exception as e:
-                    print('Error:', str(e))
+                    print('send_data Error:', str(e))
+                    self.client_socket.close()
+                    self.client_socket = None
+                    self.obu_connected = False
                     return None
 
     def receive_data(self):
@@ -38,7 +57,6 @@ class TcpConnectionManager:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
             if ready_to_read:                
                 received_data = self.client_socket.recv(1024)
-                # self.receive_buffer += received_data
                 return received_data #.decode()
             return None
 
