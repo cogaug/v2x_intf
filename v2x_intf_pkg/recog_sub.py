@@ -31,7 +31,7 @@ class RecognitionSubscriber(Node):
           self.get_logger().info(f'(->V2X) Send recognition message at {datetime.now()}')
           self.connection_manager.send_data(data)
         else:
-          self.connection_manager.open_connection()
           self.get_logger().error('Error: Connection not open, ignore TOPIC')
+          self.connection_manager.open_connection()
     except Exception as e:
       self.get_logger().error(f'Error processing recognition message: {e}')

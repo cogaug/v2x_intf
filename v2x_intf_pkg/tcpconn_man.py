@@ -25,6 +25,7 @@ class TcpConnectionManager:
     def open_connection(self):
         with self.lock:
             if self.client_socket is not None:
+                print(f"Previous connection exists with self.obu_connected = {self.obu_connected}")
                 return self.obu_connected
             
             try:
