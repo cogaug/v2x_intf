@@ -3,9 +3,9 @@ import asyncio
 import threading
 import argparse
 from rclpy.executors import MultiThreadedExecutor
-from v2x_intf_pkg.tcpconn_man import TcpConnectionManager
-from v2x_intf_pkg.recog_sub import RecognitionSubscriber
-from v2x_intf_pkg.recog_pub import RecognitionPublisher
+from v2x_intf_pkg.v2x_conn_man import IntfConnManager
+from v2x_intf_pkg.v2x_intf_recog_sub import RecognitionSubscriber
+from v2x_intf_pkg.v2x_intf_recog_pub import RecognitionPublisher
 
 
 def main(args=None):
@@ -16,7 +16,7 @@ def main(args=None):
   parser.add_argument('--obu-port', type=int, default=9201, help='The port of the OBU (default: 9201)')
   parsed_args = parser.parse_args()
   
-  connection_manager = TcpConnectionManager(obu_ip=parsed_args.obu_ip, obu_port=parsed_args.obu_port)
+  connection_manager = IntfConnManager(obu_ip=parsed_args.obu_ip, obu_port=parsed_args.obu_port)
   recognition_publisher = RecognitionPublisher(connection_manager)
   recognition_subscriber = RecognitionSubscriber(connection_manager)
 

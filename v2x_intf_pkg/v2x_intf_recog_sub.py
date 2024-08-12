@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
-from v2x_intf_pkg.msg_conv import RecognitionMsg
+from v2x_intf_pkg.v2x_msg_conv import RecognitionMsg
 from datetime import datetime
 
 class RecognitionSubscriber(Node):
