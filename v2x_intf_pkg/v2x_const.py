@@ -1,6 +1,6 @@
 class V2XConstants:
-    OBU_IP = 'localhost'
-    OBU_PORT = 9201
+    DEFAULT_OBU_IP = 'localhost'
+    DEFAULT_OBU_PORT = 9201
 
     EQUIPMENT_TYPE = 2 # OBU
 

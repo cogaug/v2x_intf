@@ -4,10 +4,10 @@ import select
 from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
 
 class TcpConnectionManager:
-    def __init__(self):
+    def __init__(self, obu_ip=v2xconst.DEFAULT_OBU_IP, obu_port=v2xconst.DEFAULT_OBU_PORT):
 
-        self.obu_ip =  v2xconst.OBU_IP 
-        self.obu_port = v2xconst.OBU_PORT
+        self.obu_ip =  obu_ip 
+        self.obu_port = obu_port
 
         self.obu_connected = False
         self.receive_buffer = b''
