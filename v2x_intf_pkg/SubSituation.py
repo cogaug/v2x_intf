@@ -7,7 +7,7 @@
 #  import rclpy
 # from rclpy.node import Node
 # from v2x_intf_msg.msg import Situation
-# from v2x_intf_pkg.MsgProcSituation import MsgProgSituation
+# from v2x_intf_pkg.MsgProcSituation import MsgProcSituation
 # from datetime import datetime
 
 # class SubRecognition(Node):
@@ -28,7 +28,7 @@
     
 #   def _callback(self, msg):
 #     self.get_logger().info(f'(ROS2->) Received situation message at {datetime.now()} : {msg}')
-#     msg_proc = MsgProgSituation(self.get_logger())
+#     msg_proc = MsgProcSituation(self.get_logger())
 #     try:
 #       data = msg_proc.toV2XMsg(msg)
 #       # Send the received message data to the server over the shared TCP connection

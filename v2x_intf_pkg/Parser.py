@@ -1,7 +1,7 @@
 from v2x_intf_msg.msg import Recognition, Object
 import struct
 from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
-from v2x_intf_pkg.MsgProcRecognition import MsgProgRecognition
+from v2x_intf_pkg.MsgProcRecognition import MsgProcRecognition
 
 class Parser :
   """
@@ -54,7 +54,7 @@ class Parser :
         self.logger.error(f"Data size {len(pkd_data) - header_size} does not match header msg_len {msg_len}")
         return None
       if msg_type == v2xconst.MSG_RECOGNITION :
-        return MsgProgRecognition(self.logger).fromV2XMsg(pkd_data)
+        return MsgProcRecognition(self.logger).fromV2XMsg(pkd_data)
       
       # TODO : Add support for other message types
 

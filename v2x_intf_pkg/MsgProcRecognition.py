@@ -4,7 +4,7 @@ import ctypes
 from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
 import v2x_intf_pkg.FmtRecognition as recogfmt
 
-class MsgProgRecognition:
+class MsgProcRecognition:
   """
   A class to handle Recognition messages.
 
