@@ -41,26 +41,26 @@ class MsgProcRecognition:
     # Just move the header part
     ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)], ctypes.sizeof(fmtcommon.v2x_intf_hdr_type))
 
+    self.logger.info(f'(V2X->) Received recognition message {recog_msg.hdr}')
     # Parse the fixed part of the recognition_data_type
     offset = ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)
     ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(recogfmt.recognition_data_fixed_part_type))
+    self.logger.info(f'(V2X->) Received recognition message {recog_msg.data}')
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
+    self.logger.info(f'(V2X->) Number of detected objects: {num_objects}')  
 
     # Calculate the size of the objects array in bytes
     objects_size = ctypes.sizeof(recogfmt.DetectedObjectCommonData) * num_objects
 
     # Parse the objects array
-    if len(data) < offset + objects_size:
+    if len(data) != offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type) +objects_size:
         self.logger.error('Data is too short to include all detected objects')
         return None
 
     objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
     ctypes.memmove(objects_array, data[offset:offset + objects_size], objects_size)
-
-
-    self.logger.info(f'(ROS->) Received recognition message {recog_msg}')
 
     # Assign the parsed objects array to the recognition message
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
@@ -91,7 +91,6 @@ class MsgProcRecognition:
     vehicle_id = 0
     for i in range(num_detected_objects):
       obj = recog_msg.objects[i]
-      self.logger.info(f'(V2X->) Detected object {i}: {obj}')
       vehicle_id = obj.objectID >> 8
       o_t = v_t + datetime.timedelta(milliseconds=obj.measurementTime)
       detected_object = Object(
