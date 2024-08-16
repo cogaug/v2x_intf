@@ -3,7 +3,7 @@ import datetime
 import ctypes
 from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
 import v2x_intf_pkg.FmtRecognition as recogfmt
-import v2x_intf_pkg.FmtHdr as hdrfmt
+import v2x_intf_pkg.FmtCommon as fmtcommon
 
 class MsgProcRecognition:
   """
@@ -39,11 +39,11 @@ class MsgProcRecognition:
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
     # Just move the header part
-    ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)], ctypes.sizeof(hdrfmt.v2x_intf_hdr_type))
+    ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)], ctypes.sizeof(fmtcommon.v2x_intf_hdr_type))
 
     # Parse the fixed part of the recognition_data_type
-    offset = ctypes.sizeof(hdrfmt.v2x_intf_hdr_type)
-    ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(v2xfmt.recognition_data_fixed_part_type))
+    offset = ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)
+    ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(fmtcommon.recognition_data_fixed_part_type))
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
@@ -166,7 +166,6 @@ class MsgProcRecognition:
     recog_msg.data.sDSMTimeStamp.second = msg.vehicle_time[5]*1000+(msg.vehicle_time[6]//1000) # milliseconds
     recog_msg.data.sDSMTimeStamp.offset = 9*60 # Timezone in minutes
 
-
     # Create datetime objects, including milliseconds to calculate measurementTimeOffset
     v_t = datetime.datetime(
       msg.vehicle_time[0],  # year
@@ -270,7 +269,10 @@ class MsgProcRecognition:
 
     fixed_part_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     objects_size = num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)
+
+    self.logger.info(f'(ROS->): hdr size {ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)}, fixed part size {fixed_part_size}, objects size {objects_size}')
     recog_msg.hdr.msgLen = fixed_part_size + objects_size
+    self.logger.info(f'(ROS->): msgLen {recog_msg.hdr.msgLen}')
     return bytes(recog_msg)
 
       
