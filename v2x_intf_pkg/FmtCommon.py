@@ -2,6 +2,7 @@ import ctypes
 
 # Define the v2x_intf_hdr_type structure
 class v2x_intf_hdr_type(ctypes.Structure):
+    _pack_ = 1  # Force packing to eliminate padding
     _fields_ = [
         ("hdr_flag", ctypes.c_uint),  # unsigned int
         ("msgID", ctypes.c_uint),     # unsigned int
@@ -10,6 +11,7 @@ class v2x_intf_hdr_type(ctypes.Structure):
 
 # Define the DDateTimeType structure
 class DDateTimeType(ctypes.Structure):
+    _pack_ = 1  # Force packing to eliminate padding
     _fields_ = [
         ("year", ctypes.c_ushort),   # unsigned short
         ("month", ctypes.c_ubyte),   # unsigned char
@@ -22,13 +24,15 @@ class DDateTimeType(ctypes.Structure):
 
 # Define the Position3D structure
 class Position3D(ctypes.Structure):
+    _pack_ = 1  # Force packing to eliminate padding
     _fields_ = [
-        ("latitude", ctypes.c_long),   # long
-        ("longitude", ctypes.c_long)   # long
+        ("latitude", ctypes.c_int32),   # long
+        ("longitude", ctypes.c_int32)   # long
     ]
 
 # Define the PositionalAccuracy structure
 class PositionalAccuracy(ctypes.Structure):
+    _pack_ = 1  # Force packing to eliminate padding
     _fields_ = [
         ("semiMajor", ctypes.c_ubyte),    # unsigned char
         ("semiMinor", ctypes.c_ubyte),    # unsigned char
@@ -37,6 +41,7 @@ class PositionalAccuracy(ctypes.Structure):
 
 # Define the PositionOffsetXYZ structure
 class PositionOffsetXYZ(ctypes.Structure):
+    _pack_ = 1  # Force packing to eliminate padding
     _fields_ = [
         ("offsetX", ctypes.c_short),  # short
         ("offsetY", ctypes.c_short)   # short

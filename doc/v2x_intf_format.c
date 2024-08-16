@@ -11,8 +11,8 @@ typedef struct {
 
 
 typedef struct {
-  long latitude;
-  long longitude;
+  int latitude;
+  int longitude;
 } Position3D;
 
 typedef struct {

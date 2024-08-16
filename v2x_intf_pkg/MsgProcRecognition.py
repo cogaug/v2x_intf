@@ -156,10 +156,7 @@ class MsgProcRecognition:
     self.logger.info(f'(ROS->): fmtcommon.DDateTimeType size {ctypes.sizeof(fmtcommon.DDateTimeType)}')
     self.logger.info(f'(ROS->): fmtcommon.Position3D size {ctypes.sizeof(fmtcommon.Position3D)}')
     self.logger.info(f'(ROS->): fmtcommon.PositionalAccuracy size {ctypes.sizeof(fmtcommon.PositionalAccuracy)}')
-
     self.logger.info(f'(ROS->): recogfmt.DetectedObjectCommonData size {ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
-
-
 
 
     # J3224의 sDSMTimeStamp format 구성
