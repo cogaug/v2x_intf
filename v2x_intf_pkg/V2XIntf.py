@@ -3,9 +3,9 @@ import asyncio
 import threading
 import argparse
 from rclpy.executors import MultiThreadedExecutor
-from v2x_intf_pkg.v2x_conn_man import IntfConnManager
-from v2x_intf_pkg.v2x_intf_recog_sub import RecognitionSubscriber
-from v2x_intf_pkg.v2x_intf_recog_pub import RecognitionPublisher
+from v2x_intf_pkg.IntfConnManager import IntfConnManager
+from v2x_intf_pkg.SubRecognition import SubRecognition
+from v2x_intf_pkg.V2XReceiver import V2XReceiver
 
 
 def main(args=None):
@@ -17,12 +17,12 @@ def main(args=None):
   parsed_args = parser.parse_args()
   
   connection_manager = IntfConnManager(obu_ip=parsed_args.obu_ip, obu_port=parsed_args.obu_port)
-  recognition_publisher = RecognitionPublisher(connection_manager)
-  recognition_subscriber = RecognitionSubscriber(connection_manager)
+  recognition_subscriber = SubRecognition(connection_manager) # ROS2의 /v2x/recognition topic을 구독하는 노드
+  v2xreceiver = V2XReceiver(connection_manager) # OBU에서 받은 데이터를 분석하여 ROS2 메시지를 발행하는 노드
 
   executor = MultiThreadedExecutor()
-  executor.add_node(recognition_publisher)
   executor.add_node(recognition_subscriber)
+  executor.add_node(v2xreceiver)
 
   loop = asyncio.get_event_loop()
 
@@ -38,13 +38,13 @@ def main(args=None):
   try:
     loop.run_forever()
   except KeyboardInterrupt:
-    recognition_publisher.get_logger().info('Shutting down due to keyboard interrupt.')
+    v2xreceiver.get_logger().info('Shutting down due to keyboard interrupt.')
 
   finally:
     # Close the connection when done
     connection_manager.close_connection()
-    recognition_publisher.destroy_node()
     recognition_subscriber.destroy_node()
+    v2xreceiver.destroy_node()
     rclpy.shutdown()
     loop.stop()
     ros_thread.join()

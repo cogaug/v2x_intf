@@ -1,68 +1,10 @@
 from v2x_intf_msg.msg import Recognition, Object
-import struct
 import datetime
 import ctypes
-from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
-import v2x_intf_pkg.v2x_intf_fmt as v2xfmt
+from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
+import v2x_intf_pkg.FmtRecognition as recogfmt
 
-class Parser :
-  """
-  A class to parse incoming data into ROS2 messages according to the msg_type field.
-
-  Attributes:
-    logger : Logger
-      The logger object to log messages.
-  """  
-  def __init__(self, logger):
-    """
-    Constructs the necessary attributes for the Parser object.
-
-    Args:
-      logger : Logger
-        The logger object to log messages.
-    """
-    self.logger = logger
-
-  def parse(self, pkd_data):
-    """
-    Parses the packed data into a Recognition message.
-
-    Args:
-      pkd_data : bytes
-        The packed data to be parsed.
-
-    Returns:
-      Recognition: The parsed Recognition message or None if parsing fails.
-    """
-    # Ensure pkd_data is bytes
-    if not isinstance(pkd_data, bytes):
-      self.logger.error("Input data is not bytes")
-      return None
-
-    # Unpack the header
-    header_size = struct.calcsize(v2xconst.fmsgHdrType)
-    hdr_data = pkd_data[:header_size]
-    hdr_values = struct.unpack(v2xconst.fmsgHdrType, hdr_data)
-
-    hdr_flag = hdr_values[0]
-    msg_type = hdr_values[1]
-    msg_len = hdr_values[2]
-    
-    if hdr_flag is v2xconst.HDR_FLAG:
-      self.info('Invalid header flag: %d' % hdr_flag)
-      return None
-    else :
-      if len(pkd_data) - header_size != msg_len:  # Check message length
-        self.logger.error(f"Data size {len(pkd_data) - header_size} does not match header msg_len {msg_len}")
-        return None
-      if msg_type == v2xconst.MSG_RECOGNITION :
-        return RecognitionMsg(self.logger).fromV2XMsg(pkd_data)
-      else :
-        self.logger.info(f'Unknown message type: {msg_type} != {v2xconst.MSG_RECOGNITION}')
-        return None
-    
-
-class RecognitionMsg :
+class MsgProgRecognition:
   """
   A class to handle Recognition messages.
 
@@ -93,31 +35,31 @@ class RecognitionMsg :
     """    
 
     # Create an empty v2x_recognition_msg_type instance
-    recog_msg = v2xfmt.v2x_recognition_msg_type()
+    recog_msg = recogfmt.v2x_recognition_msg_type()
 
     # Parse the header part
-    ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(v2xfmt.v2x_intf_hdr_type)], ctypes.sizeof(v2xfmt.v2x_intf_hdr_type))
+    ctypes.memmove(ctypes.addressof(recog_msg.hdr), data[:ctypes.sizeof(recogfmt.v2x_intf_hdr_type)], ctypes.sizeof(recogfmt.v2x_intf_hdr_type))
 
     # Parse the fixed part of the recognition_data_type
-    offset = ctypes.sizeof(v2xfmt.v2x_intf_hdr_type)
-    ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(v2xfmt.recognition_data_fixed_part_type)], ctypes.sizeof(v2xfmt.recognition_data_fixed_part_type))
+    offset = ctypes.sizeof(recogfmt.v2x_intf_hdr_type)
+    ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(v2xfmt.recognition_data_fixed_part_type))
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
 
     # Calculate the size of the objects array in bytes
-    objects_size = ctypes.sizeof(v2xfmt.DetectedObjectCommonData) * num_objects
+    objects_size = ctypes.sizeof(recogfmt.DetectedObjectCommonData) * num_objects
 
     # Parse the objects array
     if len(data) < offset + objects_size:
         self.logger.error('Data is too short to include all detected objects')
         return None
 
-    objects_array = (v2xfmt.DetectedObjectCommonData * num_objects)()
+    objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
     ctypes.memmove(objects_array, data[offset:offset + objects_size], objects_size)
 
     # Assign the parsed objects array to the recognition message
-    recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(v2xfmt.DetectedObjectCommonData))
+    recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
 
     vehicle_time = [
       recog_msg.data.sDSMTimeStamp.year,
@@ -182,14 +124,14 @@ class RecognitionMsg :
 
     #   detected_objects.append(detected_object)
 
-    # Construct the message object
-    msg = Recognition(
-        vehicle_id = vehicle_id,
-        vehicle_time = vehicle_time,
-        vehicle_position = vehicle_position,
-        object_data = detected_objects
-    )
-      
+      # Construct the message object
+      msg = Recognition(
+          vehicle_id = vehicle_id,
+          vehicle_time = vehicle_time,
+          vehicle_position = vehicle_position,
+          object_data = detected_objects
+      )
+        
     return msg
 
   
@@ -204,12 +146,12 @@ class RecognitionMsg :
     Returns:
       bytes: The packed data format of the Recognition message.
     """
-    recog_msg = v2xfmt.v2x_recognition_msg_type()
+    recog_msg = recogfmt.v2x_recognition_msg_type()
 
     # J3224의 sDSMTimeStamp format 구성
     recog_msg.hdr.hdr_flag = v2xconst.HDR_FLAG
     recog_msg.hdr.msgID = v2xconst.MSG_RECOGNITION
-    # recog_msg.hdr.msgLen = ctypes.sizeof(v2xfmt.v2x_recognition_msg_type) - ctypes.sizeof(v2xfmt.v2x_intf_hdr_type)
+    # recog_msg.hdr.msgLen = ctypes.sizeof(recogfmt.v2x_recognition_msg_type) - ctypes.sizeof(recogfmt.v2x_intf_hdr_type)
 
     recog_msg.data.equipmentType = v2xconst.EQUIPMENT_TYPE
     recog_msg.data.sDSMTimeStamp.year = msg.vehicle_time[0] # year
@@ -256,7 +198,7 @@ class RecognitionMsg :
       num_objects = 255
       self.logger.info(f'Number of detected objects is over 256, set to 255')
 
-    objects_array = (v2xfmt.DetectedObjectCommonData * num_objects)()
+    objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
     for idx, obj in enumerate(msg.object_data) :
       if idx >= num_objects :
         break
@@ -320,10 +262,10 @@ class RecognitionMsg :
       objects_array[idx].heading = heading
       objects_array[idx].headingConf = 0
 
-    recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(v2xfmt.DetectedObjectCommonData))
+    recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
 
-    fixed_part_size = ctypes.sizeof(v2xfmt.recognition_data_fixed_part_type)
-    objects_size = num_objects * ctypes.sizeof(v2xfmt.DetectedObjectCommonData)
+    fixed_part_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
+    objects_size = num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)
     recog_msg.hdr.msgLen = fixed_part_size + objects_size
     return bytes(recog_msg)
 
