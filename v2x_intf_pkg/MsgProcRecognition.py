@@ -280,8 +280,12 @@ class MsgProcRecognition:
     self.logger.info(f'(ROS->): hdr size {ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)}, fixed part size {fixed_part_size}, objects size {objects_size}')
     recog_msg.hdr.msgLen = fixed_part_size + objects_size
     self.logger.info(f'(ROS->): msgLen {recog_msg.hdr.msgLen}')
-    self.logger.info(f'(ROS->): object_array size len {len(objects_array)}')
-    self.logger.info(f'(ROS->): recog_msg.objects len {len(recog_msg.objects)}')
+
+    self.logger.info(f'Size of DetectedObjectCommonData: {ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
+    self.logger.info(f'Expected total objects size: {num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
+    for idx, obj in enumerate(msg.object_data) :
+      self.logger.info(f'Object {idx}: {obj}')
+      
     self.logger.info(f'(ROS->): recognition message created length {ctypes.sizeof(recog_msg)}')
     self.logger.info(f'(ROS->): recognition message created {bytes(recog_msg)}')
     self.logger.info(f'(ROS->): recognition message created with lenght {len(bytes(recog_msg))}')
