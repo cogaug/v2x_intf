@@ -59,6 +59,9 @@ class MsgProcRecognition:
     objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
     ctypes.memmove(objects_array, data[offset:offset + objects_size], objects_size)
 
+
+    self.logger.info(f'(ROS->) Received recognition message {recog_msg}')
+
     # Assign the parsed objects array to the recognition message
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
 
@@ -88,6 +91,7 @@ class MsgProcRecognition:
     vehicle_id = 0
     for i in range(num_detected_objects):
       obj = recog_msg.objects[i]
+      self.logger.info(f'(V2X->) Detected object {i}: {obj}')
       vehicle_id = obj.objectID >> 8
       o_t = v_t + datetime.timedelta(milliseconds=obj.measurementTime)
       detected_object = Object(
@@ -237,12 +241,15 @@ class MsgProcRecognition:
       objects_array[idx].speedConfidence = 0
       objects_array[idx].heading = heading
       objects_array[idx].headingConf = 0
+      self.logger.info(f'(ROS->): Detected object {idx}: {objects_array[idx]}')
 
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
     
     fixed_part_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     objects_size = num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)
     recog_msg.hdr.msgLen = fixed_part_size + objects_size
+
+    self.logger.info(f'(ROS->): Creating recognition message {recog_msg}')
 
     hdr_bytes = ctypes.string_at(ctypes.byref(recog_msg.hdr), ctypes.sizeof(recog_msg.hdr))
     fixed_part_bytes = ctypes.string_at(ctypes.byref(recog_msg.data), ctypes.sizeof(recog_msg.data))
