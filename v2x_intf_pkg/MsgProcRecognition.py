@@ -280,6 +280,8 @@ class MsgProcRecognition:
     self.logger.info(f'(ROS->): hdr size {ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)}, fixed part size {fixed_part_size}, objects size {objects_size}')
     recog_msg.hdr.msgLen = fixed_part_size + objects_size
     self.logger.info(f'(ROS->): msgLen {recog_msg.hdr.msgLen}')
+    self.logger.info(f'(ROS->): recognition message created length {ctypes.sizeof(recog_msg)}')
+    self.logger.info(f'(ROS->): recognition message created {bytes(recog_msg)}')
     self.logger.info(f'(ROS->): recognition message created with lenght {len(bytes(recog_msg))}')
     return bytes(recog_msg)
 
