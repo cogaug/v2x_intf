@@ -16,7 +16,7 @@ class V2XMsgsPub(Node):
         vehicle_position = [(0.321+float(self.cnt_run))%90.0, (0.33232+float(self.cnt_run))%180.0]
         objects = []
 
-        for i in range(2):
+        for i in range(255):
             detection_time = self.date_time(30*((self.cnt_run)%10))
             object_position = [(0.434+float(self.cnt_run))%3276.0, (0.343+float(self.cnt_run))%3276.0]
             object_velocity = (0.662+float(self.cnt_run))%163.0
