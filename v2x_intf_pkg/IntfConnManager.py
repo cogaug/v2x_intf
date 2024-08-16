@@ -1,9 +1,9 @@
 import socket
 import threading
 import select
-from v2x_intf_pkg.v2x_const import V2XConstants as v2xconst
+from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
 
-class TcpConnectionManager:
+class IntfConnManager:
     def __init__(self, obu_ip=v2xconst.DEFAULT_OBU_IP, obu_port=v2xconst.DEFAULT_OBU_PORT):
 
         self.obu_ip =  obu_ip 
@@ -56,7 +56,7 @@ class TcpConnectionManager:
         with self.lock:
             ready_to_read, _, _ = select.select([self.client_socket], [], [], 0.1)
             if ready_to_read:                
-                received_data = self.client_socket.recv(1024)
+                received_data = self.client_socket.recv(8192)
                 return received_data #.decode()
             return None
 

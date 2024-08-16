@@ -2,13 +2,13 @@
 import rclpy
 from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
-from v2x_intf_pkg.msg_conv import Parser
+from v2x_intf_pkg.Parser import Parser
 import asyncio
 from datetime import datetime
 
-class RecognitionPublisher(Node):
+class V2XReceiver(Node):
   def __init__(self, connection_manager):
-    super().__init__('recognition_publisher')
+    super().__init__('V2XReceiver')
     self.connection_manager = connection_manager
     self.parser = Parser(self.get_logger())
     self.recognition_publisher = self.create_publisher(Recognition, 'v2x/r_recognition', 10)   
@@ -24,11 +24,16 @@ class RecognitionPublisher(Node):
         if received_data is not None:
           self.get_logger().info(f'(V2X->) received data at {datetime.now()}')          
           # Parse the received data
-          recognition_msg = self.parser.parse(received_data)
-          if recognition_msg is not None:
+          parsed_msg = self.parser.parse(received_data)
+          if isinstance(parsed_msg, Recognition):
             # Publish the Recognition message
-            self.get_logger().info(f'(->ROS2) Publish recognition message at {datetime.now()}: {recognition_msg}')    
-            self.recognition_publisher.publish(recognition_msg)
+            self.get_logger().info(f'(->ROS2) Publish recognition message at {datetime.now()}: {parsed_msg}')    
+            self.recognition_publisher.publish(parsed_msg)
+          
+          # TODO : Add support for other message types
+          
+          else:
+            self.get_logger().error('Error parsing message')
 
   def shutdown(self):
     self.connection_manager.close_connection()

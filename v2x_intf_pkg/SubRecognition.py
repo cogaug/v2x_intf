@@ -1,30 +1,30 @@
 import rclpy
 from rclpy.node import Node
 from v2x_intf_msg.msg import Recognition
-from v2x_intf_pkg.msg_conv import RecognitionMsg
+from v2x_intf_pkg.MsgProcRecognition import MsgProcRecognition
 from datetime import datetime
 
-class RecognitionSubscriber(Node):
+class SubRecognition(Node):
   def __init__(self, connection_manager):
-    super().__init__('recognition_subscriber')
+    super().__init__('V2X_Recognition')
 
     self.equipmentType = 2 # unknown (0), rsu (1), obu (2)
     self.subscription = self.create_subscription(
             Recognition,
             'v2x/recognition',
-            self.recognition_callback,
+            self._callback,
             10
         )
         
-    # self.subscription  # prevent unused variable warning
+    self.subscription  # prevent unused variable warning
     self.connection_manager = connection_manager
     self.get_logger().info('Recognition subscriber initialized')
     
-  def recognition_callback(self, msg):
+  def _callback(self, msg):
     self.get_logger().info(f'(ROS2->) Received recognition message at {datetime.now()} : {msg}')
-    recogMsg = RecognitionMsg(self.get_logger())
+    msg_proc = MsgProcRecognition(self.get_logger())
     try:
-      data = recogMsg.toV2XMsg(msg)
+      data = msg_proc.toV2XMsg(msg)
       # Send the received message data to the server over the shared TCP connection
       if data :
         if self.connection_manager.obu_connected :
