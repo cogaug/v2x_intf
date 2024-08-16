@@ -69,25 +69,25 @@ typedef struct {
   recognition_data_type data;
 } v2x_recognition_msg_type;
 
-typedef struct {
-  v2x_intf_hdr_type hdr;
+// typedef struct {
+//   v2x_intf_hdr_type hdr;
   
-  // TODO: Add situation data
-  // situation_data_type data;
-} v2x_situation_msg_type;
+//   // TODO: Add situation data
+//   // situation_data_type data;
+// } v2x_situation_msg_type;
 
 
-typedef struct {
-  v2x_intf_hdr_type hdr;
+// typedef struct {
+//   v2x_intf_hdr_type hdr;
   
-  // TODO: Add negotiation data
-  // negotiation_data_type data;
-} v2x_negotiation_msg_type;
+//   // TODO: Add negotiation data
+//   // negotiation_data_type data;
+// } v2x_negotiation_msg_type;
 
 typedef union {
   v2x_intf_hdr_type hdr;
   v2x_recognition_msg_type  recog;
-  v2x_situation_msg_type    situ;
-  v2x_negotiation_msg_type  nego;
+//   v2x_situation_msg_type    situ;
+//   v2x_negotiation_msg_type  nego;
 } v2x_intf_msg_type;
 

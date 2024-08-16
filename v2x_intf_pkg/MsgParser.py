@@ -7,36 +7,13 @@ from v2x_intf_pkg.MsgProcRecognition import MsgProcRecognition
 from v2x_intf_pkg.MsgProcCommon import MsgProcCommon
 
 class Parser :
-  """
-  A class to parse incoming data into ROS2 messages according to the msg_type field.
-
-  Attributes:
-    logger : Logger
-      The logger object to log messages.
-  """  
   def __init__(self, logger):
-    """
-    Constructs the necessary attributes for the Parser object.
 
-    Args:
-      logger : Logger
-        The logger object to log messages.
-    """
     self.logger = logger
     self.msgProcCommon = MsgProcCommon(self.logger)
     self.msgProcRecognition = MsgProcRecognition(self.logger)
 
   def parse(self, pkd_data):
-    """
-    Parses the packed data into a Recognition message.
-
-    Args:
-      pkd_data : bytes
-        The packed data to be parsed.
-
-    Returns:
-      Recognition: The parsed Recognition message or None if parsing fails.
-    """
     # Ensure pkd_data is bytes
     if not isinstance(pkd_data, bytes):
       self.logger.error("Input data is not bytes")

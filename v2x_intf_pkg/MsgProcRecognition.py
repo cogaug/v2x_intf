@@ -5,36 +5,11 @@ from v2x_intf_pkg.V2XConstants import V2XConstants as v2xconst
 import v2x_intf_pkg.FmtRecognition as recogfmt
 import v2x_intf_pkg.FmtCommon as fmtcommon
 
-class MsgProcRecognition:
-  """
-  A class to handle Recognition messages.
-
-  Attributes:
-    logger : Logger
-      The logger object to log messages.
-  """  
+class MsgProcRecognition: 
   def __init__(self, logger):
-    """
-    Constructs the necessary attributes for the RecognitionMsg object.
-
-    Args:
-      logger : Logger
-        The logger object to log messages.
-    """
     self.logger = logger
 
   def fromV2XMsg(self, data): # Header를 제외한 데이터를 수신받아서 Recognition 메시지로 변환
-    """
-    Converts received data into a Recognition message.
-
-    Args:
-      data : bytes
-        The data received, excluding the header.
-
-    Returns:
-      Recognition: The constructed Recognition message.
-    """    
-
     # Create an empty v2x_recognition_msg_type instance
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
@@ -102,21 +77,6 @@ class MsgProcRecognition:
         recognition_accuracy = obj.objTypeCfd
       )
 
-      # self.logger.info(f'(ROS->): Detected object {i}: '
-      #            f'objType={obj.objType}, '
-      #            f'objTypeCfd={obj.objTypeCfd}, '
-      #            f'objectID={obj.objectID}, '
-      #            f'measurementTime={obj.measurementTime}, '
-      #            f'timeConfidence={obj.timeConfidence}, '
-      #            f'pos.offsetX={obj.pos.offsetX}, '
-      #            f'pos.offsetY={obj.pos.offsetY}, '
-      #            f'posConfidence={obj.posConfidence}, '
-      #            f'speed={obj.speed}, '
-      #            f'speedConfidence={obj.speedConfidence}, '
-      #            f'heading={obj.heading}, '
-      #            f'headingConf={obj.headingConf}')
-
-
       detected_objects.append(detected_object)
 
       # Construct the message object
@@ -131,17 +91,6 @@ class MsgProcRecognition:
 
   
   def toV2XMsg(self, msg):
-    """
-    Converts a Recognition message into a packed data format.
-
-    Args:
-      msg : Recognition
-        The Recognition message to be converted.
-
-    Returns:
-      bytes: The packed data format of the Recognition message.
-
-    """
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
     # J3224의 sDSMTimeStamp format 구성
@@ -167,12 +116,9 @@ class MsgProcRecognition:
       msg.vehicle_time[5],  # second
       msg.vehicle_time[6]   # microsecond
     )
-    self.logger.info(f'(ROS->): Data created at {v_t}')
-
     recog_msg.data.refPos.latitude = int(float(msg.vehicle_position[0])*1000.0*1000.0*10.0) # Latitude in 1/10th microdegree
     recog_msg.data.refPos.longitude = int(float(msg.vehicle_position[1])*1000.0*1000.0*10.0)  # Longitude in 1/10th microdegree
     
-
     if recog_msg.data.refPos.latitude > 900000000 or recog_msg.data.refPos.latitude < -900000000 :
       self.logger.info(f'Latitude is out of range {recog_msg.data.refPos.latitude}')
       return None
@@ -191,9 +137,6 @@ class MsgProcRecognition:
       recog_msg.data.numDetectedObjects = 255
       num_objects = 255
       self.logger.info(f'Number of detected objects is over 256, set to 255')
-
-    # self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
-
 
     objects_array = (recogfmt.DetectedObjectCommonData * num_objects)()
     for idx, obj in enumerate(msg.object_data) :
@@ -258,21 +201,6 @@ class MsgProcRecognition:
       objects_array[idx].speedConfidence = 0
       objects_array[idx].heading = heading
       objects_array[idx].headingConf = 0
-      
-      # self.logger.info(f'(ROS->): Detected object {idx}: '
-      #            f'objType={objects_array[idx].objType}, '
-      #            f'objTypeCfd={objects_array[idx].objTypeCfd}, '
-      #            f'objectID={objects_array[idx].objectID}, '
-      #            f'measurementTime={objects_array[idx].measurementTime}, '
-      #            f'timeConfidence={objects_array[idx].timeConfidence}, '
-      #            f'pos.offsetX={objects_array[idx].pos.offsetX}, '
-      #            f'pos.offsetY={objects_array[idx].pos.offsetY}, '
-      #            f'posConfidence={objects_array[idx].posConfidence}, '
-      #            f'speed={objects_array[idx].speed}, '
-      #            f'speedConfidence={objects_array[idx].speedConfidence}, '
-      #            f'heading={objects_array[idx].heading}, '
-      #            f'headingConf={objects_array[idx].headingConf}')
-
 
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
     
@@ -289,7 +217,6 @@ class MsgProcRecognition:
         objects_bytes += object_bytes
 
     recog_bytes = hdr_bytes + fixed_part_bytes + objects_bytes
-    self.logger.info(f'(->V2X) Send recognition message length : {len(bytes(recog_bytes))}')
     return bytes(recog_bytes)
 
       
