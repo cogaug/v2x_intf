@@ -103,6 +103,21 @@ class MsgProcRecognition:
         recognition_accuracy = obj.objTypeCfd
       )
 
+      self.logger.info(f'(ROS->): Detected object {i}: '
+                 f'objType={obj.objType}, '
+                 f'objTypeCfd={obj.objTypeCfd}, '
+                 f'objectID={obj.objectID}, '
+                 f'measurementTime={obj.measurementTime}, '
+                 f'timeConfidence={obj.timeConfidence}, '
+                 f'pos.offsetX={obj.pos.offsetX}, '
+                 f'pos.offsetY={obj.pos.offsetY}, '
+                 f'posConfidence={obj.posConfidence}, '
+                 f'speed={obj.speed}, '
+                 f'speedConfidence={obj.speedConfidence}, '
+                 f'heading={obj.heading}, '
+                 f'headingConf={obj.headingConf}')
+
+
       detected_objects.append(detected_object)
 
       # Construct the message object
@@ -241,7 +256,21 @@ class MsgProcRecognition:
       objects_array[idx].speedConfidence = 0
       objects_array[idx].heading = heading
       objects_array[idx].headingConf = 0
-      self.logger.info(f'(ROS->): Detected object {idx}: {objects_array[idx]}')
+      
+      self.logger.info(f'(ROS->): Detected object {idx}: '
+                 f'objType={objects_array[idx].objType}, '
+                 f'objTypeCfd={objects_array[idx].objTypeCfd}, '
+                 f'objectID={objects_array[idx].objectID}, '
+                 f'measurementTime={objects_array[idx].measurementTime}, '
+                 f'timeConfidence={objects_array[idx].timeConfidence}, '
+                 f'pos.offsetX={objects_array[idx].pos.offsetX}, '
+                 f'pos.offsetY={objects_array[idx].pos.offsetY}, '
+                 f'posConfidence={objects_array[idx].posConfidence}, '
+                 f'speed={objects_array[idx].speed}, '
+                 f'speedConfidence={objects_array[idx].speedConfidence}, '
+                 f'heading={objects_array[idx].heading}, '
+                 f'headingConf={objects_array[idx].headingConf}')
+
 
     recog_msg.objects = ctypes.cast(objects_array, ctypes.POINTER(recogfmt.DetectedObjectCommonData))
     
