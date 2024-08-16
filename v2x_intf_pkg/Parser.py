@@ -53,9 +53,8 @@ class Parser :
     else :
       header_size = ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)
       data_len = len(pkd_data)
-      self.logger.info(f'Parsing header: {hdr_flag}, {msg_type}, {msg_len}, {header_size}, {data_len}')
-      if data_len - header_size != msg_len:  # Check message length
-        self.logger.error(f"Data size {data_len - header_size} does not match header msg_len {msg_len}")
+      if data_len - header_size != msg_len:  # Check message length\
+        self.logger.info(f'Invalid message length: {data_len - header_size} != {msg_len}')
         return None
       if msg_type == v2xconst.MSG_RECOGNITION :
         return MsgProcRecognition(self.logger).fromV2XMsg(pkd_data)

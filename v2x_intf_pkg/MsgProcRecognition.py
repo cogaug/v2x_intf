@@ -43,7 +43,7 @@ class MsgProcRecognition:
 
     # Parse the fixed part of the recognition_data_type
     offset = ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)
-    ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(fmtcommon.recognition_data_fixed_part_type))
+    ctypes.memmove(ctypes.addressof(recog_msg.data), data[offset:offset + ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)], ctypes.sizeof(recogfmt.recognition_data_fixed_part_type))
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
@@ -148,16 +148,6 @@ class MsgProcRecognition:
       bytes: The packed data format of the Recognition message.
     """
     recog_msg = recogfmt.v2x_recognition_msg_type()
-
-    self.logger.info(f'(ROS->): Start to create recognition message from {msg}')
-
-    self.logger.info(f'(ROS->): fmtcommon.v2x_intf_hdr_type size {ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)}')
-    self.logger.info(f'(ROS->): recogfmt.recognition_data_fixed_part_type size {ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)}')
-    self.logger.info(f'(ROS->): fmtcommon.DDateTimeType size {ctypes.sizeof(fmtcommon.DDateTimeType)}')
-    self.logger.info(f'(ROS->): fmtcommon.Position3D size {ctypes.sizeof(fmtcommon.Position3D)}')
-    self.logger.info(f'(ROS->): fmtcommon.PositionalAccuracy size {ctypes.sizeof(fmtcommon.PositionalAccuracy)}')
-    self.logger.info(f'(ROS->): recogfmt.DetectedObjectCommonData size {ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
-
 
     # J3224의 sDSMTimeStamp format 구성
     recog_msg.hdr.hdr_flag = v2xconst.HDR_FLAG
