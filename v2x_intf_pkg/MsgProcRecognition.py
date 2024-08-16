@@ -148,6 +148,9 @@ class MsgProcRecognition:
     """
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
+    self.logger.info(f'(ROS->): Start to create recognition message from {msg}')
+
+
     # J3224의 sDSMTimeStamp format 구성
     recog_msg.hdr.hdr_flag = v2xconst.HDR_FLAG
     recog_msg.hdr.msgID = v2xconst.MSG_RECOGNITION
