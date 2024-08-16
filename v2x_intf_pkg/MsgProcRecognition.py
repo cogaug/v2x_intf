@@ -283,9 +283,9 @@ class MsgProcRecognition:
 
     self.logger.info(f'Size of DetectedObjectCommonData: {ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
     self.logger.info(f'Expected total objects size: {num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)}')
-    for idx, obj in enumerate(msg.object_data) :
+    for idx, obj in enumerate(recog_msg.objects) :
       self.logger.info(f'Object {idx}: {obj}')
-      
+
     self.logger.info(f'(ROS->): recognition message created length {ctypes.sizeof(recog_msg)}')
     self.logger.info(f'(ROS->): recognition message created {bytes(recog_msg)}')
     self.logger.info(f'(ROS->): recognition message created with lenght {len(bytes(recog_msg))}')
