@@ -22,7 +22,7 @@ class V2XReceiver(Node):
         # Run the blocking receive_data method in a separate thread
         received_data = await self.loop.run_in_executor(None, self.connection_manager.receive_data)
         if received_data is not None:
-          self.get_logger().info(f'(V2X->) received data at {datetime.now()}')          
+          self.get_logger().info(f'(V2X->) received data at {datetime.now()} with length {len(received_data)}')          
           # Parse the received data
           parsed_msg = self.parser.parse(received_data)
           if isinstance(parsed_msg, Recognition):

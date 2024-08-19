@@ -208,7 +208,7 @@ class MsgProcRecognition:
     fixed_part_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     objects_size = num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)
     recog_msg.hdr.msgLen = socket.htonl(fixed_part_size + objects_size)
-
+    self.logger.info(f'(->V2X) msg_len = {fixed_part_size + objects_size}, hdr.msgLen = {socket.ntohl(recog_msg.hdr.msgLen)}')
     hdr_bytes = ctypes.string_at(ctypes.byref(recog_msg.hdr), ctypes.sizeof(recog_msg.hdr))
     fixed_part_bytes = ctypes.string_at(ctypes.byref(recog_msg.data), ctypes.sizeof(recog_msg.data))
 
@@ -218,6 +218,7 @@ class MsgProcRecognition:
         objects_bytes += object_bytes
 
     recog_bytes = hdr_bytes + fixed_part_bytes + objects_bytes
+    self.logger.info(f'(->V2X) length of recog_bytes = {len(recog_bytes)}')
     return bytes(recog_bytes)
 
       
