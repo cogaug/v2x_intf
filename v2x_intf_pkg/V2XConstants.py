@@ -9,6 +9,6 @@ class V2XConstants:
     # HDR_FLAG = 0x53415445
     HDR_FLAG = 0x45544153 # in big-endian
     # MSG_RECOGNITION = 0x016792
-    MSG_RECOGNITION = 0x926701 # in big-endian
+    MSG_RECOGNITION = 0x00926701 # in big-endian
 
     
