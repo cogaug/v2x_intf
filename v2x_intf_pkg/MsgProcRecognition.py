@@ -91,12 +91,12 @@ class MsgProcRecognition:
       )
 
 
-      if self.expected_cfd == -1:
-        self.expected_cfd = (rec_acc+1)%100
-      else:
-        if self.expected_cfd != rec_acc:
-          self.logger.error(f'Expected recognition accuracy {self.expected_cfd} but received {rec_acc}')
-        self.expected_cfd = (rec_acc+1)%100
+    if self.expected_cfd == -1:
+      self.expected_cfd = (rec_acc+1)%100
+    else:
+      if self.expected_cfd != rec_acc:
+        self.logger.error(f'Expected recognition accuracy {self.expected_cfd} but received {rec_acc}')
+      self.expected_cfd = (rec_acc+1)%100
 
     return msg
 
