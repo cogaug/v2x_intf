@@ -26,7 +26,7 @@ class Parser :
     else :
       header_size = ctypes.sizeof(fmtcommon.v2x_intf_hdr_type)
       data_len = len(pkd_data)
-      self.logger.info(f'Received data length: {data_len}, header size: {header_size}, message length field: {msg_len}')
+      # self.logger.info(f'Received data length: {data_len}, header size: {header_size}, message length field: {msg_len}')
       if data_len - header_size != msg_len:  # Check message length\
         self.logger.info(f'Invalid message length: {data_len - header_size} != {msg_len}')
         return None
