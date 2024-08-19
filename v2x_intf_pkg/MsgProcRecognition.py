@@ -24,6 +24,7 @@ class MsgProcRecognition:
     ctypes.memmove(ctypes.addressof(recog_msg.data), data[hdr_size:(hdr_size+fixed_size)], fixed_size)
 
     # self.logger.info(f'(V2X->) Equipment Type: {recog_msg.data.equipmentType}, refPos: {recog_msg.data.refPos.latitude}, {recog_msg.data.refPos.longitude}, refPosXYConf: {recog_msg.data.refPosXYConf.semiMajor}, {recog_msg.data.refPosXYConf.semiMinor}, {recog_msg.data.refPosXYConf.orientation} numDetectedObjects: {recog_msg.data.numDetectedObjects}')
+    self.logger.info(f'Expected msgSeq {self.expected_msgSeq} - received msgSeq {recog_msg.data.msgSeq}')
     if self.expected_msgSeq == 256:
       self.expected_msgSeq = (recog_msg.data.msgSeq+1)%255
     else:
@@ -107,7 +108,7 @@ class MsgProcRecognition:
 
     recog_msg.data.msgSeq = self.msgSeq
     self.msgSeq = (self.msgSeq + 1) % 255
-    self.logger.info(f'msgSeq = {recog_msg.data.msgSeq}')
+    # self.logger.info(f'msgSeq = {recog_msg.data.msgSeq}')
     recog_msg.data.equipmentType = v2xconst.EQUIPMENT_TYPE
     recog_msg.data.sDSMTimeStamp.year = msg.vehicle_time[0] # year
     recog_msg.data.sDSMTimeStamp.month = msg.vehicle_time[1]  # month
