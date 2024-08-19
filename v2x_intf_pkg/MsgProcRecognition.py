@@ -25,7 +25,7 @@ class MsgProcRecognition:
 
     # Calculate the number of detected objects
     num_objects = recog_msg.data.numDetectedObjects
-    self.logger.info(f'(V2X->) Number of detected objects: {num_objects}')  
+    # self.logger.info(f'(V2X->) Number of detected objects: {num_objects}')  
 
     # Calculate the size of the objects array in bytes
     objects_size = ctypes.sizeof(recogfmt.DetectedObjectCommonData) * num_objects
@@ -52,7 +52,7 @@ class MsgProcRecognition:
     ]
 
     v_t = datetime.datetime(*vehicle_time)
-    self.logger.info(f'(V2X->) Receive data created at {v_t}')
+    # self.logger.info(f'(V2X->) Receive data created at {v_t}')
     vehicle_position = (
       float(recog_msg.data.refPos.latitude)/(1000.0*1000.0*10.0),  # latitude
       float(recog_msg.data.refPos.longitude)/(1000.0*1000.0*10.0)  # longitude
@@ -61,10 +61,11 @@ class MsgProcRecognition:
     num_detected_objects = recog_msg.data.numDetectedObjects
     detected_objects = []
     if num_detected_objects > 255:
-      self.logger.error(f'Number of detected objects {num_detected_objects} exceeds maximum 255, set to 255')
+      # self.logger.error(f'Number of detected objects {num_detected_objects} exceeds maximum 255, set to 255')
       num_detected_objects = 255
 
     vehicle_id = 0
+    rec_acc = 0
     for i in range(num_detected_objects):
       obj = recog_msg.objects[i]
       vehicle_id = obj.objectID >> 8
@@ -77,7 +78,7 @@ class MsgProcRecognition:
         object_class = obj.objType,
         recognition_accuracy = obj.objTypeCfd
       )
-
+      rec_acc = obj.objTypeCfd  # For test missing packet
       detected_objects.append(detected_object)
 
       # Construct the message object
@@ -87,7 +88,7 @@ class MsgProcRecognition:
           vehicle_position = vehicle_position,
           object_data = detected_objects
       )
-        
+    self.logger.info(f'(->ROS2) Recognition message seq : {rec_acc}')
     return msg
 
   
@@ -208,7 +209,7 @@ class MsgProcRecognition:
     fixed_part_size = ctypes.sizeof(recogfmt.recognition_data_fixed_part_type)
     objects_size = num_objects * ctypes.sizeof(recogfmt.DetectedObjectCommonData)
     recog_msg.hdr.msgLen = socket.htonl(fixed_part_size + objects_size)
-    self.logger.info(f'(->V2X) msg_len = {fixed_part_size + objects_size}, hdr.msgLen = {socket.ntohl(recog_msg.hdr.msgLen)}')
+    # self.logger.info(f'(->V2X) msg_len = {fixed_part_size + objects_size}, hdr.msgLen = {socket.ntohl(recog_msg.hdr.msgLen)}')
     hdr_bytes = ctypes.string_at(ctypes.byref(recog_msg.hdr), ctypes.sizeof(recog_msg.hdr))
     fixed_part_bytes = ctypes.string_at(ctypes.byref(recog_msg.data), ctypes.sizeof(recog_msg.data))
 
@@ -218,7 +219,7 @@ class MsgProcRecognition:
         objects_bytes += object_bytes
 
     recog_bytes = hdr_bytes + fixed_part_bytes + objects_bytes
-    self.logger.info(f'(->V2X) length of recog_bytes = {len(recog_bytes)}')
+    # self.logger.info(f'(->V2X) length of recog_bytes = {len(recog_bytes)}')
     return bytes(recog_bytes)
 
       

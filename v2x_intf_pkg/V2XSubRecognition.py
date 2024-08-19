@@ -21,14 +21,14 @@ class SubRecognition(Node):
     self.get_logger().info('Recognition subscriber initialized')
     
   def _callback(self, msg):
-    self.get_logger().info(f'(ROS2->) Received recognition message at {datetime.now()} : {msg}')
+    # self.get_logger().info(f'(ROS2->) Received recognition message at {datetime.now()} : {msg}')
     msg_proc = MsgProcRecognition(self.get_logger())
     try:
       data = msg_proc.toV2XMsg(msg)
       # Send the received message data to the server over the shared TCP connection
       if data :
         if self.connection_manager.obu_connected :
-          self.get_logger().info(f'(->V2X) Send recognition message at {datetime.now()}')
+          # self.get_logger().info(f'(->V2X) Send recognition message at {datetime.now()}')
           self.connection_manager.send_data(data)
         else:
           self.get_logger().error('Error: Connection not open, ignore TOPIC')
