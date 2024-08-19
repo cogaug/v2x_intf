@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 class V2XMsgsPub(Node):
     def __init__(self):
         super().__init__('v2x_msg_pub')
-        self.timer_period = 0.1
+        self.timer_period = 0.2
         self.cnt_run = 1
         self.pub_rec = self.create_publisher(Recognition, 'v2x/recognition', 10)
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
