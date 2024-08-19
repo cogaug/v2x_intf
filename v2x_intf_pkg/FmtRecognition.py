@@ -21,11 +21,12 @@ class DetectedObjectCommonData(ctypes.Structure):
 class recognition_data_fixed_part_type(ctypes.Structure):
     _pack_ = 1  # Force packing to eliminate padding
     _fields_ = [
-        ("equipmentType", ctypes.c_ubyte),    # unsigned char
+        ("msgSeq", ctypes.c_ubyte),                     # unsigned char
+        ("equipmentType", ctypes.c_ubyte),              # unsigned char
         ("sDSMTimeStamp", fmtcommon.DDateTimeType),     # DDateTimeType structure
         ("refPos", fmtcommon.Position3D),               # Position3D structure
         ("refPosXYConf", fmtcommon.PositionalAccuracy), # PositionalAccuracy structure
-        ("numDetectedObjects", ctypes.c_ubyte) # unsigned char
+        ("numDetectedObjects", ctypes.c_ubyte)          # unsigned char
     ]
 
 # Define the v2x_recognition_msg_type structure
