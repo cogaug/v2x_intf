@@ -19,12 +19,12 @@ class SubRecognition(Node):
     self.subscription  # prevent unused variable warning
     self.connection_manager = connection_manager
     self.get_logger().info('Recognition subscriber initialized')
+    self.msg_proc = MsgProcRecognition(self.get_logger())
     
   def _callback(self, msg):
     # self.get_logger().info(f'(ROS2->) Received recognition message at {datetime.now()} : {msg}')
-    msg_proc = MsgProcRecognition(self.get_logger())
     try:
-      data = msg_proc.toV2XMsg(msg)
+      data = self.msg_proc.toV2XMsg(msg)
       # Send the received message data to the server over the shared TCP connection
       if data :
         if self.connection_manager.obu_connected :
