@@ -66,6 +66,7 @@ class MsgProcRecognition:
       num_detected_objects = 255
 
     vehicle_id = 0
+    rec_acc = 0
     for i in range(num_detected_objects):
       obj = recog_msg.objects[i]
       vehicle_id = obj.objectID >> 8
@@ -78,14 +79,7 @@ class MsgProcRecognition:
         object_class = obj.objType,
         recognition_accuracy = obj.objTypeCfd
       )
-
-      if self.expected_cfd == -1:
-        self.expected_cfd = (obj.objTypeCfd+1)%100
-      else:  
-        if self.expected_cfd != obj.objTypeCfd:
-          self.logger.error(f'Expected recognition accuracy {self.expected_cfd} but received {obj.objTypeCfd}')
-        self.expected_cfd = (obj.objTypeCfd+1)%100
-          
+      rec_acc = obj.objTypeCfd          
       detected_objects.append(detected_object)
 
       # Construct the message object
@@ -95,6 +89,15 @@ class MsgProcRecognition:
           vehicle_position = vehicle_position,
           object_data = detected_objects
       )
+
+
+      if self.expected_cfd == -1:
+        self.expected_cfd = (rec_acc+1)%100
+      else:
+        if self.expected_cfd != rec_acc:
+          self.logger.error(f'Expected recognition accuracy {self.expected_cfd} but received {rec_acc}')
+        self.expected_cfd = (rec_acc+1)%100
+
     return msg
 
   
