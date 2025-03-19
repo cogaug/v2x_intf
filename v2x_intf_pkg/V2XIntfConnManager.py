@@ -44,7 +44,7 @@ class IntfConnManager:
         if self.obu_connected :
             with self.lock:
                 try:
-                    self.client_socket.send(data)
+                    self.client_socket.sendall(data)
                 except Exception as e:
                     print('send_data Error:', str(e))
                     self.client_socket.close()
