@@ -104,7 +104,10 @@ class MsgProcRecognition:
     if not isinstance(msg, Recognition):
       self.logger.error('Input message is not of type Recognition')
       return None
-  
+
+    if msg.vehicle_time is None or len(msg.vehicle_time) != 7:
+      self.logger.error('vehicle_time is not properly set in Recognition message')
+      return None
 
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
