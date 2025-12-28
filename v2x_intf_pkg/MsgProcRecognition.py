@@ -109,6 +109,10 @@ class MsgProcRecognition:
       self.logger.error('vehicle_time is not properly set in Recognition message')
       return None
 
+    if msg.vehicle_position is None or len(msg.vehicle_position) != 2:
+      self.logger.error('vehicle_position is not properly set in Recognition message')
+      return None
+    
     recog_msg = recogfmt.v2x_recognition_msg_type()
 
     # J3224의 sDSMTimeStamp format 구성
