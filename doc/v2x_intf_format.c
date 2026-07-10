@@ -27,13 +27,18 @@ typedef struct {
 } PositionOffsetXYZ;
 
 typedef struct {
+  unsigned char pos;
+  unsigned char elevation;
+} PositionConfidenceSet;
+
+typedef struct {
   unsigned char objType;
   unsigned char objTypeCfd;
   unsigned short objectID;
   short measurementTime;
   unsigned char timeConfidence;
   PositionOffsetXYZ pos;
-  unsigned char posConfidence;
+  PositionConfidenceSet posConfidence;
   unsigned short speed;
   unsigned char speedConfidence;
   unsigned short heading;
@@ -54,6 +59,8 @@ typedef struct {
 
 #define NUM_OF_OBJECTS 255
 typedef struct {
+  unsigned char msgCnt; // Sequence number
+  unsigned char sourceID[4]; // temporary vehicle ID / RSU ID. SDSM source.
   unsigned char equipmentType;
   DDateTimeType sDSMTimeStamp;
   Position3D  refPos;
@@ -61,8 +68,6 @@ typedef struct {
   unsigned char numDetectedObjects;
   DetectedObjectCommonData objects[NUM_OF_OBJECTS]; // numDetectedObjects 갯수 만큼만...
 } recognition_data_type;
-
-
 
 typedef struct {
   v2x_intf_hdr_type hdr;
